@@ -1,0 +1,78 @@
+###
+
+// -- USERS --
+###
+POST http://localhost:3000/users/sign_in
+content-type: application/json
+
+{
+  "user": {
+    "email": "filo@gmail.com",
+    "password": "filoculo"
+  }
+}
+
+###
+POST http://localhost:3000/users
+content-type: application/json
+
+{
+  "user": {
+    "email": "filo@gmail.com",
+    "password": "filoculo",
+    "password_confirmation": "filoculo"
+  }
+}
+
+###
+DELETE http://localhost:3000/users/sign_out
+
+###
+DELETE http://localhost:3000/users/
+
+
+// -- TRAINERS --
+
+###
+POST http://localhost:3000/trainers
+content-type: application/json
+
+{
+  "trainer": {
+    "email": "filo@gmail.com",
+    "password": "filoculo",
+    "password_confirmation": "filoculo"
+  }
+}
+
+###
+POST http://localhost:3000/trainers/sign_in
+content-type: application/json
+
+{
+  "trainer": {
+    "email": "filo@gmail.com",
+    "password": "filoculo"
+  }
+}
+
+###
+DELETE http://localhost:3000/trainers
+
+// ** create bookings
+
+// bkg 1
+###
+POST http://localhost:3000/api/bookings/create
+Content-Type: application/json
+
+{
+  "userId": "1",
+  "start": "2022-09-12T10:30:00.000Z",
+  "end": "2022-09-12T12:00:00.000Z",
+  "trainerId": "2"
+}
+
+###
+GET http://localhost:3000/api/bookings/list
+Content-Type: application/json
