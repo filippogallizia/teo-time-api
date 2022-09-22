@@ -2,17 +2,16 @@ module TeoTime
   class BookingsApi < Grape::API
     resource :bookings do
 
-      desc 'Return a public timeline.'
+      desc 'List all bookings'
       get :list do
-        Booking.all if authenticated
+        authorize! :read, Booking
+        Booking.all
       end
 
-      desc 'Create a booking.'
-      # params do
-      #   requires :status, type: String, desc: 'Your status.'
-      # end
+      desc 'Create a booking'
       post :create do
-        # authenticate!
+        authenticated
+        authorize! :update, Booking
         Booking.create!(
           {
             user_id: 1,

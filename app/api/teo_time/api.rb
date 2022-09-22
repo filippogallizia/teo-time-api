@@ -31,9 +31,9 @@ module TeoTime
         when NotAuthenticated
           omit_backtrace = true
           { status: 401, message: err.message }
-          # when CanCan::AccessDenied
-          #   omit_backtrace = true
-          #   { status: 403, message: err.message || "You are not authorized" }
+        when CanCan::AccessDenied
+          omit_backtrace = true
+          { status: 403, message: err.message || "You are not authorized" }
         when InvalidToken
           omit_backtrace = true
           { status: 401, message: "Invalid token" }
@@ -45,9 +45,6 @@ module TeoTime
           ActiveRecord::StatementInvalid,
           Mysql2::Error
           { status: 400, message: "Please try again" }
-          # when Grape::Exceptions::ValidationErrors,
-          #   Aws::SNS::MessageVerifier::VerificationError
-          #   { status: 400, message: err.message }
         when ActiveRecord::ActiveRecordError
           validation_errors = err.try(:record).try(:errors).try(:messages)
           { status: 400, message: { error: err.message, errors: validation_errors } }
@@ -56,6 +53,22 @@ module TeoTime
         else
           { status: 500, message: err.message }
         end
+
+      request = ::Rack::Request.new(env)
+      log_data = {
+        method: request.request_method,
+        path: request.path,
+        params: request.params.symbolize_keys.except(*Rails.application.config.filter_parameters),
+        extra: (request.env["teoTime.extra"] || {}).merge(
+          {
+            error_class: err.class.name,
+            error_message: err.message,
+            error_backtrace: omit_backtrace ? ["OMITTED"] : err.backtrace
+          }
+        )
+      }.merge(response)
+
+      error!(response[:message], response[:status])
     end
 
     helpers do
@@ -64,47 +77,29 @@ module TeoTime
       end
 
       def current_user
-        warden.user || warden.trainer
+        mappings = [:user, :trainer]
+        @user = nil
+        mappings.each { |acc| @user = warden.authenticate(scope: acc) if !!warden.authenticate(scope: acc) }
+        @user
+      end
+
+      def ability
+        @ability ||= Ability.new(current_user)
       end
 
       def authenticated
-        if warden.authenticated?
+        if current_user
           return true
         else
           error!('401 Unauthorized', 401)
         end
       end
+
+      def authorize!(*args)
+        ability.authorize!(*args)
+      end
     end
 
     mount TeoTime::BookingsApi
-
-    # resource :bookings do
-    #   desc 'Return a public timeline.'
-    #   get :list do
-    #     Booking.all if authenticated
-    #   end
-    #
-    #   desc 'Create a booking.'
-    #   # params do
-    #   #   requires :status, type: String, desc: 'Your status.'
-    #   # end
-    #   post :create do
-    #     # authenticate!
-    #     Booking.create!(
-    #       {
-    #         user_id: 1,
-    #         trainer_id: 2,
-    #         start: params[:start],
-    #         end: params[:end]
-    #       }
-    #     )
-    #   end
-    #
-    #   desc 'Return a personal timeline.'
-    #   get :home_timeline do
-    #     # authenticate!
-    #     current_user.statuses.limit(20)
-    #   end
-    # end
   end
 end

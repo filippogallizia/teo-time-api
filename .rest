@@ -1,5 +1,3 @@
-###
-
 // -- USERS --
 ###
 POST http://localhost:3000/users/sign_in
@@ -7,7 +5,7 @@ content-type: application/json
 
 {
   "user": {
-    "email": "filo@gmail.com",
+    "email": "filoo@gmail.com",
     "password": "filoculo"
   }
 }
@@ -18,7 +16,7 @@ content-type: application/json
 
 {
   "user": {
-    "email": "filo@gmail.com",
+    "email": "galliziafilippo@gmail.com",
     "password": "filoculo",
     "password_confirmation": "filoculo"
   }
@@ -39,7 +37,7 @@ content-type: application/json
 
 {
   "trainer": {
-    "email": "filo@gmail.com",
+    "email": "trainer@gmail.com",
     "password": "filoculo",
     "password_confirmation": "filoculo"
   }
@@ -51,7 +49,7 @@ content-type: application/json
 
 {
   "trainer": {
-    "email": "filo@gmail.com",
+    "email": "trainer@gmail.com",
     "password": "filoculo"
   }
 }
@@ -75,4 +73,8 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/api/bookings/list
+Content-Type: application/json
+
+###
+GET http://localhost:3000/test/new
 Content-Type: application/json

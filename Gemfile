@@ -69,5 +69,4 @@ gem 'grape'
 #devise
 gem 'devise'
 
-#cancancan
-# gem 'cancancan'
+gem 'cancancan'
