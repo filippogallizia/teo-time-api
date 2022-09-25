@@ -5,3 +5,11 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+['client', 'trainer', 'admin', 'blocked'].each do |role|
+  Role.find_or_create_by({ name: role })
+end
+
+['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].each do |day|
+  Day.find_or_create_by({ name: day })
+end

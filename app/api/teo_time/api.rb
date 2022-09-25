@@ -87,12 +87,8 @@ module TeoTime
         @ability ||= Ability.new(current_user)
       end
 
-      def authenticated
-        if current_user
-          return true
-        else
-          error!('401 Unauthorized', 401)
-        end
+      def authenticate!
+        raise NotAuthenticated unless current_user
       end
 
       def authorize!(*args)
