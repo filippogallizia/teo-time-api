@@ -77,10 +77,7 @@ module TeoTime
       end
 
       def current_user
-        mappings = [:user, :trainer]
-        @user = nil
-        mappings.each { |acc| @user = warden.authenticate(scope: acc) if !!warden.authenticate(scope: acc) }
-        @user
+        @user || warden.user
       end
 
       def ability
@@ -91,11 +88,17 @@ module TeoTime
         raise NotAuthenticated unless current_user
       end
 
+      def authenticated?
+        return warden.authenticated? || @user.present?
+      end
+
       def authorize!(*args)
         ability.authorize!(*args)
       end
     end
 
     mount TeoTime::BookingsApi
+    mount TeoTime::EventsApi
+    mount TeoTime::WeeklyAvailabilityApi
   end
 end

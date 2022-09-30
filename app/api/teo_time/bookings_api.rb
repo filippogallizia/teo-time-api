@@ -16,10 +16,11 @@ module TeoTime
         # authorize! :update, Booking
         Booking.create!(
           {
-            user_id: 1,
-            trainer_id: 2,
-            start: params[:start],
-            end: params[:end]
+            user_id: params[:user_id],
+            trainer_id: params[:trainer_id],
+            start: params[:start].to_datetime,
+            end: params[:end].to_datetime,
+            event_id: params[:event_id]
           }
         )
       end

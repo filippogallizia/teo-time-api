@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_09_24_213224) do
+ActiveRecord::Schema.define(version: 2022_09_28_060840) do
 
   create_table "bookings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "start"
@@ -18,50 +18,45 @@ ActiveRecord::Schema.define(version: 2022_09_24_213224) do
     t.integer "calendarEventId"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id"
     t.bigint "trainer_id"
+    t.bigint "user_id"
+    t.bigint "event_id"
+    t.index ["event_id"], name: "index_bookings_on_event_id"
     t.index ["trainer_id"], name: "index_bookings_on_trainer_id"
     t.index ["user_id"], name: "index_bookings_on_user_id"
   end
 
   create_table "days", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
-    t.string "string"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
-    t.string "string"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "weekly_availability_id"
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_events_on_user_id"
+    t.index ["weekly_availability_id"], name: "index_events_on_weekly_availability_id"
   end
 
   create_table "hours", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "start"
-    t.string "time"
-    t.string "end"
+    t.integer "start"
+    t.integer "end"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "weekly_availability_id"
+    t.bigint "day_id"
+    t.index ["day_id"], name: "index_hours_on_day_id"
+    t.index ["weekly_availability_id"], name: "index_hours_on_weekly_availability_id"
   end
 
   create_table "roles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "trainers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_trainers_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_trainers_on_reset_password_token", unique: true
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -80,12 +75,12 @@ ActiveRecord::Schema.define(version: 2022_09_24_213224) do
 
   create_table "weekly_availabilities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
-    t.string "string"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "bookings", "trainers"
   add_foreign_key "bookings", "users"
+  add_foreign_key "events", "users"
+  add_foreign_key "events", "weekly_availabilities"
   add_foreign_key "users", "roles"
 end

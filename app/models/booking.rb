@@ -1,26 +1,29 @@
 class Booking < ApplicationRecord
-  belongs_to :user, optional: true
-  belongs_to :trainer, optional: true
-
-  validates_associated :trainer
-  validates_associated :user
-  validates_presence_of :start, :end, :trainer_id, :user_id
+  belongs_to :user, :class_name => 'User'
+  belongs_to :trainer, :class_name => 'User'
+  belongs_to :event
+  validates_presence_of :start, :end, :trainer_id, :user_id, :event_id
   validate :validate_overlapping
+
+  include TimeHelper
+
+  def retrieve_week_day
+    self.read_attribute(:start).wday
+  end
 
   private
 
   def overlaps(range_one, range_two)
-    self.errors.add("This booking", "is overlaping an existing one") if range_one[:start] <= range_two[:end] && range_two[:start] <= range_one[:end]
+    # self.errors.add("This booking", "is overlaping an existing one") if range_one[:start] <= range_two[:end] && range_two[:start] <= range_one[:end]
+    self.errors.add("This booking", "is overlaping an existing one") if overlaps?(range_one, range_two)
   end
 
   def validate_overlapping
     all_bookings = Booking.all
-    all_bookings.each { |book| overlaps({ start: self.start, end: self.end }, { start: book.start, end: book.end }) }
+    all_bookings.each { |book| overlaps({ start: self.start, end: self.end }, { start: book.start, end: book.end }) } if all_bookings.length
   end
 
-  # Return a scope for all interval overlapping the given interval, excluding the given interval itself
-  # scope :overlapping, -> { |interval|
-  #   where("id <> ? AND start_date <= ? AND ? <= end_date", interval.id, interval.end_date, interval.start_date)
-  # }
-
+  scope :inside_range, ->(range, event_id) {
+    where(Arel.sql("event_id = #{event_id} AND NOT start > '#{range[:end]}' OR end < '#{range[:start]}'"))
+  }
 end

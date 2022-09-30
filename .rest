@@ -16,12 +16,14 @@ content-type: application/json
 
 {
   "user": {
-    "email": "galliziafilippoo@gmail.com",
+    "email": "galliziaaaaafilippoo@gmail.com",
     "password": "filoculo",
     "password_confirmation": "filoculo",
     "role_id": 1
   }
 }
+
+
 
 ###
 DELETE http://localhost:3000/users/sign_out
@@ -29,49 +31,7 @@ DELETE http://localhost:3000/users/sign_out
 ###
 DELETE http://localhost:3000/users/
 
-
-// -- TRAINERS --
-
-###
-POST http://localhost:3000/trainers
-content-type: application/json
-
-{
-  "trainer": {
-    "email": "trainer@gmail.com",
-    "password": "filoculo",
-    "password_confirmation": "filoculo"
-  }
-}
-
-###
-POST http://localhost:3000/trainers/sign_in
-content-type: application/json
-
-{
-  "trainer": {
-    "email": "trainer@gmail.com",
-    "password": "filoculo",
-    "role": "admin"
-  }
-}
-
-###
-DELETE http://localhost:3000/trainers
-
 // --BOOKINGS--
-
-// bkg 1
-###
-POST http://localhost:3000/api/bookings/create
-Content-Type: application/json
-
-{
-  "userId": "1",
-  "start": "2022-09-12T12:01:00.000Z",
-  "end": "2022-09-12T13:30:00.000Z",
-  "trainerId": "2"
-}
 
 ###
 GET http://localhost:3000/api/bookings/index
@@ -82,7 +42,70 @@ GET http://localhost:3000/api/bookings/36
 Content-Type: application/json
 
 ###
+POST http://localhost:3000/api/bookings/create
+Content-Type: application/json
+
+{
+  "user_id": "1",
+  "trainer_id": "1",
+  "start": "19-09-2022T20:01:00.000Z",
+  "end": "30-09-2022T21:01:00.000Z",
+  "event_id": 2
+}
+
+###
 DELETE http://localhost:3000/api/bookings/36
+Content-Type: application/json
+
+// --EVENTS--
+
+###
+GET http://localhost:3000/api/events/index
+Content-Type: application/json
+
+###
+GET http://localhost:3000/api/events/2
+Content-Type: application/json
+
+###
+POST http://localhost:3000/api/events/create
+Content-Type: application/json
+
+{
+  "user_id": "1",
+  "name": "filo_event",
+  "weekly_availability_id": 1
+}
+
+###
+DELETE http://localhost:3000/api/events/1
+Content-Type: application/json
+
+###
+GET http://localhost:3000/api/events/2/available_times?start=18-09-2022T08:02:00.000Z&end=19-09-2022T20:00:00.000Z
+Content-Type: application/json
+
+
+// --WEEKLY_AVAILABILITIES--
+
+###
+GET http://localhost:3000/api/weekly_availabilities/index
+Content-Type: application/json
+
+###
+GET http://localhost:3000/api/weekly_availabilities/1
+Content-Type: application/json
+
+###
+POST http://localhost:3000/api/weekly_availabilities/create
+Content-Type: application/json
+
+{
+  "name": "filo_weekly_availability"
+}
+
+###
+DELETE http://localhost:3000/api/weekly_availabilities/1
 Content-Type: application/json
 
 
