@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_09_28_060840) do
+ActiveRecord::Schema.define(version: 2022_10_01_085241) do
 
   create_table "bookings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "start"
@@ -21,9 +21,11 @@ ActiveRecord::Schema.define(version: 2022_09_28_060840) do
     t.bigint "trainer_id"
     t.bigint "user_id"
     t.bigint "event_id"
+    t.bigint "weekly_availability_id"
     t.index ["event_id"], name: "index_bookings_on_event_id"
     t.index ["trainer_id"], name: "index_bookings_on_trainer_id"
     t.index ["user_id"], name: "index_bookings_on_user_id"
+    t.index ["weekly_availability_id"], name: "index_bookings_on_weekly_availability_id"
   end
 
   create_table "days", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -38,6 +40,8 @@ ActiveRecord::Schema.define(version: 2022_09_28_060840) do
     t.datetime "updated_at", null: false
     t.bigint "weekly_availability_id"
     t.bigint "user_id"
+    t.integer "duration"
+    t.integer "increment_amount"
     t.index ["user_id"], name: "index_events_on_user_id"
     t.index ["weekly_availability_id"], name: "index_events_on_weekly_availability_id"
   end

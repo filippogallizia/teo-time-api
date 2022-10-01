@@ -42,19 +42,24 @@ GET http://localhost:3000/api/bookings/36
 Content-Type: application/json
 
 ###
+PUT http://localhost:3000/api/bookings/71
+Content-Type: application/json
+
+###
 POST http://localhost:3000/api/bookings/create
 Content-Type: application/json
 
 {
   "user_id": "1",
   "trainer_id": "1",
-  "start": "19-09-2022T20:01:00.000Z",
-  "end": "30-09-2022T21:01:00.000Z",
-  "event_id": 2
+  "start": "2022-11-19T14:01:00.000Z",
+  "end": "2022-11-19T16:59:00.000Z",
+  "event_id": 3,
+  "weekly_availability_id": 1
 }
 
 ###
-DELETE http://localhost:3000/api/bookings/36
+DELETE http://localhost:3000/api/bookings/68
 Content-Type: application/json
 
 // --EVENTS--
@@ -68,13 +73,19 @@ GET http://localhost:3000/api/events/2
 Content-Type: application/json
 
 ###
+PUT http://localhost:3000/api/events/2
+Content-Type: application/json
+
+###
 POST http://localhost:3000/api/events/create
 Content-Type: application/json
 
 {
   "user_id": "1",
   "name": "filo_event",
-  "weekly_availability_id": 1
+  "weekly_availability_id": 1,
+  "increment_amount": 30,
+  "duration": 60
 }
 
 ###
@@ -82,7 +93,7 @@ DELETE http://localhost:3000/api/events/1
 Content-Type: application/json
 
 ###
-GET http://localhost:3000/api/events/2/available_times?start=18-09-2022T08:02:00.000Z&end=19-09-2022T20:00:00.000Z
+GET http://localhost:3000/api/events/2/available_times?start=2022-11-19T06:00:00.000Z&end=2022-11-21T21:00:00.000Z
 Content-Type: application/json
 
 

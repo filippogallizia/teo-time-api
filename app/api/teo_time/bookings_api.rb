@@ -20,7 +20,8 @@ module TeoTime
             trainer_id: params[:trainer_id],
             start: params[:start].to_datetime,
             end: params[:end].to_datetime,
-            event_id: params[:event_id]
+            event_id: params[:event_id],
+            weekly_availability_id: params[:weekly_availability_id]
           }
         )
       end
@@ -36,6 +37,16 @@ module TeoTime
           # authenticate!
           # authorize! :read, Booking
           Booking.find(params[:id])
+        end
+
+        # /events/:id
+        desc 'Edit event'
+        put do
+          # authenticate!
+          # authorize! :update, Event
+          # binding.pry
+          booking = Booking.find(params[:id])
+          # booking.update(weekly_availability_id: 1)
         end
 
         # /bookings/:id

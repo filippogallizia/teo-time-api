@@ -2,7 +2,8 @@ class Booking < ApplicationRecord
   belongs_to :user, :class_name => 'User'
   belongs_to :trainer, :class_name => 'User'
   belongs_to :event
-  validates_presence_of :start, :end, :trainer_id, :user_id, :event_id
+  belongs_to :weekly_availability
+  validates_presence_of :start, :end, :trainer_id, :user_id, :event_id, :weekly_availability_id
   validate :validate_overlapping
 
   include TimeHelper
@@ -23,7 +24,7 @@ class Booking < ApplicationRecord
     all_bookings.each { |book| overlaps({ start: self.start, end: self.end }, { start: book.start, end: book.end }) } if all_bookings.length
   end
 
-  scope :inside_range, ->(range, event_id) {
-    where(Arel.sql("event_id = #{event_id} AND NOT start > '#{range[:end]}' OR end < '#{range[:start]}'"))
+  scope :inside_range, ->(range) {
+    where.not(Arel.sql("start > '#{range[:end]}' OR end < '#{range[:start]}'"))
   }
 end
