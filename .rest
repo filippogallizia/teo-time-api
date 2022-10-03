@@ -52,8 +52,8 @@ Content-Type: application/json
 {
   "user_id": "1",
   "trainer_id": "1",
-  "start": "2022-11-19T14:01:00.000Z",
-  "end": "2022-11-19T16:59:00.000Z",
+  "start": "2022-11-21T08:01:00.000Z",
+  "end": "2022-11-21T16:59:00.000Z",
   "event_id": 3,
   "weekly_availability_id": 1
 }
@@ -93,7 +93,8 @@ DELETE http://localhost:3000/api/events/1
 Content-Type: application/json
 
 ###
-GET http://localhost:3000/api/events/2/available_times?start=2022-11-19T06:00:00.000Z&end=2022-11-21T21:00:00.000Z
+GET http://localhost:3000/api/events/2/available_times?start=2022-11-18T06:00:00.000Z&end=2022-11-21T21:00:00.000Z
+
 Content-Type: application/json
 
 

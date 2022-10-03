@@ -6,12 +6,8 @@ class WeeklyAvailability < ApplicationRecord
   include TimeHelper
 
   def group_hours_by_day
-    hours.group_by { |h| h.day_id }.map do |key, value|
-      res = {}
-      res[key] = value.map { |hour| hour.get_start_end }
-      res
-    end.each_with_object({}) do |item, hash|
-      hash[item.keys[0]] = item.values[0]
+    hours.group_by { |h| h.day_id }.each_with_object({}) do |(key, value), hash|
+      hash[key] = value.map { |hour| hour.get_start_end }
     end
   end
 end

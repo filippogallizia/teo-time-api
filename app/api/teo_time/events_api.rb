@@ -72,30 +72,38 @@ module TeoTime
         get 'available_times' do
           rangeStart = params[:start].to_datetime
           rangeEnd = params[:end].to_datetime
-          # (rangeStart..rangeEnd).group_by(&:wday)
           event = Event.find(3)
-          weekly_event_slots = event.weekly_availability.group_hours_by_day.transform_values { |values|
-            values.map { |v| create_slot([], event.increment_amount, event.duration, { start: v[:start], end: v[:end] }) }.flatten
+
+          avail_divided_by_date = divide_range_in_days({ start: rangeStart, end: rangeEnd }).each { |key, value| value.each { |hash|
+            hash[:slots] = event.weekly_availability.hours.where(day_id: key).each_with_object([]) do |value, arr|
+              arr << value.get_start_end2(hash[:date])
+            end
+                             .map { |v| create_slot([], event.increment_amount, event.duration, { start: v[:start], end: v[:end] }) }.flatten
           }
-          bookings_inside_range = event.bookings.inside_range({ start: rangeStart, end: rangeEnd })
-          yo = divide_range_in_days({ start: rangeStart, end: rangeEnd })
-          binding.pry
+          }
 
-          # binding.pry
-          # bookings_inside_range
-          # binding.pry
-          # bookings = Booking.inside_range({ start: rangeStart, end: rangeEnd }, params[:id])
-          # weekly_event_slots
+          bookings_inside_range_grouped_by_day = event.bookings.inside_range({ start: rangeStart, end: rangeEnd }).group_by { |b| b.start.wday }
 
-          # r = availability_hours_grouped_for_day.map do |key, value|
-          #   hash.values
-          # end
-          # r
-          # bookings
-          # bookings.group_by(&:wday)
-          # bookings
+          bookings_inside_range_grouped_by_day.each_with_object([]) { |(day_id, bookings), array|
+            avail_divided_by_date.each { |key, avail|
+              if key == day_id
+                bookings.each { |bkg|
+                  avail.each { |avl|
+                    if are_dates_equal?(avl[:date], bkg[:start])
+                      array << {
+                        bkg_start: bkg.start,
+                        bkg_end: bkg.end,
+                        date: avl[:date],
+                        slots: avl[:slots].select { |slot|
+                          overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
+                      }
+                    end
+                  }
+                }
+              end
+            }
+          }
         end
-
       end
     end
   end

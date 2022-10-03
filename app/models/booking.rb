@@ -20,6 +20,7 @@ class Booking < ApplicationRecord
   end
 
   def validate_overlapping
+    #TODO filter for event
     all_bookings = Booking.all
     all_bookings.each { |book| overlaps({ start: self.start, end: self.end }, { start: book.start, end: book.end }) } if all_bookings.length
   end
