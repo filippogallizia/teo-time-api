@@ -72,7 +72,7 @@ module TeoTime
         get 'available_times' do
           rangeStart = params[:start].to_datetime
           rangeEnd = params[:end].to_datetime
-          event = Event.find(3)
+          event = Event.find(params[:id])
 
           avail_divided_by_date = divide_range_in_days({ start: rangeStart, end: rangeEnd }).each { |key, value| value.each { |hash|
             hash[:slots] = event.weekly_availability.hours.where(day_id: key).each_with_object([]) do |value, arr|
@@ -85,19 +85,45 @@ module TeoTime
           bookings_inside_range_grouped_by_day = event.bookings.inside_range({ start: rangeStart, end: rangeEnd }).group_by { |b| b.start.wday }
 
           bookings_inside_range_grouped_by_day.each_with_object([]) { |(day_id, bookings), array|
-            avail_divided_by_date.each { |key, avail|
-              if key == day_id
+            avail_divided_by_date.each { |day, avail|
+              if day == day_id
                 bookings.each { |bkg|
                   avail.each { |avl|
                     if are_dates_equal?(avl[:date], bkg[:start])
+                      index = array.index { |ar| ar[:date] == avl[:date] }
+                      if index
+                        array[index] = {
+                          **array[index],
+                          bookings: array[index][:bookings] << { start: bkg[:start], end: bkg[:end] },
+                          slots: array[index][:slots].select { |slot|
+                            overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
+                        }
+                      else
+                        array << {
+                          day_id: day,
+                          bookings: [{ start: bkg[:start], end: bkg[:end] }],
+                          date: avl[:date],
+                          slots: avl[:slots].select { |slot|
+                            overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
+                        }
+                      end
+                    else
                       array << {
-                        bkg_start: bkg.start,
-                        bkg_end: bkg.end,
+                        day_id: day,
+                        bookings: [],
                         date: avl[:date],
-                        slots: avl[:slots].select { |slot|
-                          overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
+                        slots: avl[:slots]
                       }
                     end
+                  }
+                }
+              else
+                avail.each { |avl|
+                  array << {
+                    day_id: day,
+                    bookings: [],
+                    date: avl[:date],
+                    slots: avl[:slots]
                   }
                 }
               end

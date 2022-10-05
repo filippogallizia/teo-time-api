@@ -1,10 +1,12 @@
 class Booking < ApplicationRecord
-  belongs_to :user, :class_name => 'User'
-  belongs_to :trainer, :class_name => 'User'
+  belongs_to :user, :class_name => 'User', :foreign_key => "user_id"
+  belongs_to :trainer, :class_name => 'User', :foreign_key => "trainer_id"
   belongs_to :event
   belongs_to :weekly_availability
-  validates_presence_of :start, :end, :trainer_id, :user_id, :event_id, :weekly_availability_id
+  # validates_presence_of :start, :end, :trainer_id, :user_id, :event_id, :weekly_availability_id
   validate :validate_overlapping
+
+  #todo validation for existing trainer_id, mysql dont work because double association on single table
 
   include TimeHelper
 
