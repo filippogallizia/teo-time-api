@@ -84,51 +84,64 @@ module TeoTime
 
           bookings_inside_range_grouped_by_day = event.bookings.inside_range({ start: rangeStart, end: rangeEnd }).group_by { |b| b.start.wday }
 
-          bookings_inside_range_grouped_by_day.each_with_object([]) { |(day_id, bookings), array|
-            avail_divided_by_date.each { |day, avail|
-              if day == day_id
-                bookings.each { |bkg|
-                  avail.each { |avl|
-                    if are_dates_equal?(avl[:date], bkg[:start])
-                      index = array.index { |ar| ar[:date] == avl[:date] }
-                      if index
-                        array[index] = {
-                          **array[index],
-                          bookings: array[index][:bookings] << { start: bkg[:start], end: bkg[:end] },
-                          slots: array[index][:slots].select { |slot|
-                            overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
-                        }
+          if bookings_inside_range_grouped_by_day.size == 0
+            avail_divided_by_date.each_with_object([]) { |(day, avail), array|
+              avail.each { |avl|
+                array << {
+                  day_id: day,
+                  bookings: [],
+                  date: avl[:date],
+                  slots: avl[:slots]
+                }
+              }
+            }
+          else
+            bookings_inside_range_grouped_by_day.each_with_object([]) { |(bkg_day_id, bookings), array|
+              avail_divided_by_date.each { |day, avail|
+                if day == bkg_day_id
+                  bookings.each { |bkg|
+                    avail.each { |avl|
+                      if are_dates_equal?(avl[:date], bkg[:start])
+                        index = array.index { |ar| ar[:date] == avl[:date] }
+                        if index
+                          array[index] = {
+                            **array[index],
+                            bookings: array[index][:bookings] << { start: bkg[:start], end: bkg[:end] },
+                            slots: array[index][:slots].select { |slot|
+                              overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
+                          }
+                        else
+                          array << {
+                            day_id: day,
+                            bookings: [{ start: bkg[:start], end: bkg[:end] }],
+                            date: avl[:date],
+                            slots: avl[:slots].select { |slot|
+                              overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
+                          }
+                        end
                       else
                         array << {
                           day_id: day,
-                          bookings: [{ start: bkg[:start], end: bkg[:end] }],
+                          bookings: [],
                           date: avl[:date],
-                          slots: avl[:slots].select { |slot|
-                            overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
+                          slots: avl[:slots]
                         }
                       end
-                    else
-                      array << {
-                        day_id: day,
-                        bookings: [],
-                        date: avl[:date],
-                        slots: avl[:slots]
-                      }
-                    end
+                    }
                   }
-                }
-              else
-                avail.each { |avl|
-                  array << {
-                    day_id: day,
-                    bookings: [],
-                    date: avl[:date],
-                    slots: avl[:slots]
+                else
+                  avail.each { |avl|
+                    array << {
+                      day_id: day,
+                      bookings: [],
+                      date: avl[:date],
+                      slots: avl[:slots]
+                    }
                   }
-                }
-              end
+                end
+              }
             }
-          }
+          end
         end
       end
     end

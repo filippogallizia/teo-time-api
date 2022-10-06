@@ -3,16 +3,6 @@ module TimeHelper
     range_one[:start] <= range_two[:end] && range_two[:start] <= range_one[:end] || false
   end
 
-  # def create_slot (slots = [], incr = 0, event_duration = 60, range_availability)
-  #   r = slots
-  #   # binding.pry
-  #   last_slot_element_end = r.length > 0 ? r.last[:end] : range_availability[:start].to_datetime
-  #   incr_parsed = slots.length > 0 ? incr : 0
-  #   return r if last_slot_element_end + incr_parsed.minutes + event_duration.minutes > range_availability[:end]
-  #   r << { start: last_slot_element_end + incr_parsed.minutes, end: last_slot_element_end + incr_parsed.minutes + event_duration.minutes }
-  #   create_slot(r, incr, event_duration, range_availability)
-  # end
-
   def create_slot (slots = [], incr = 0, event_duration = 60, range_availability)
     r = slots
     last_slot_element_end = r.length > 0 ? r.last[:end] : range_availability[:start]
@@ -51,4 +41,9 @@ module TimeHelper
   def are_dates_equal?(date_one, date_two)
     date_one.strftime("%m/%d/%Y") == date_two.strftime("%m/%d/%Y")
   end
+
+  def date_to_hour_and_minute_format (date)
+    date.strftime('%H:%M')
+  end
 end
+
