@@ -46,6 +46,15 @@ module TeoTime
           # binding.pry
           WeeklyAvailability.destroy(params[:id])
         end
+
+        # /weekly_availabilities/:id/hours
+        desc 'get single weekly_availability'
+        get 'hours' do
+          # authenticate!
+          # authorize! :read, WeeklyAvailability
+          weekly_avail = WeeklyAvailability.find(params[:id])
+          weekly_avail.hours.map { |h| h.start_end_in_hours }
+        end
       end
     end
   end

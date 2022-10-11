@@ -7,6 +7,7 @@ module TeoTime
       get :index do
         # authenticate!
         # authorize! :read, Booking
+        binding.pry
         Booking.all
       end
 

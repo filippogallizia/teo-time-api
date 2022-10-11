@@ -23,8 +23,6 @@ content-type: application/json
   }
 }
 
-
-
 ###
 DELETE http://localhost:3000/users/sign_out
 
@@ -52,8 +50,8 @@ Content-Type: application/json
 {
   "user_id": 1,
   "trainer_id": "1",
-  "start": "2022-11-21T13:01:00.000Z",
-  "end": "2022-11-21T16:59:00.000Z",
+  "start": "2022-11-21T08:00:00.000Z",
+  "end": "2022-11-21T09:00:00.000Z",
   "event_id": 1,
   "weekly_availability_id": 1
 }
@@ -95,8 +93,9 @@ Content-Type: application/json
 ###
 GET http://localhost:3000/api/events/1/available_times?start=2022-11-17T06:00:00.000Z&end=2022-11-21T21:00:00.000Z
 
+###
+GET http://localhost:3000/api/events/1/bookings
 Content-Type: application/json
-
 
 // --WEEKLY_AVAILABILITIES--
 
@@ -120,4 +119,7 @@ Content-Type: application/json
 DELETE http://localhost:3000/api/weekly_availabilities/1
 Content-Type: application/json
 
+###
+GET http://localhost:3000/api/weekly_availabilities/1/hours
+Content-Type: application/json
 

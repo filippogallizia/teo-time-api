@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_04_194537) do
+ActiveRecord::Schema.define(version: 2022_10_10_143026) do
 
   create_table "bookings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
     t.datetime "start"
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 2022_10_04_194537) do
     t.bigint "event_id"
     t.bigint "weekly_availability_id"
     t.bigint "trainer_id"
+    t.string "time_zone"
     t.index ["event_id"], name: "index_bookings_on_event_id"
     t.index ["trainer_id"], name: "index_bookings_on_trainer_id"
     t.index ["user_id"], name: "index_bookings_on_user_id"
@@ -54,6 +55,7 @@ ActiveRecord::Schema.define(version: 2022_10_04_194537) do
     t.datetime "updated_at", null: false
     t.bigint "weekly_availability_id"
     t.bigint "day_id"
+    t.string "time_zone"
     t.index ["day_id"], name: "index_hours_on_day_id"
     t.index ["weekly_availability_id"], name: "index_hours_on_weekly_availability_id"
   end

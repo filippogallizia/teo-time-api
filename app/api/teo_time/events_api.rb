@@ -75,8 +75,8 @@ module TeoTime
           event = Event.find(params[:id])
 
           avail_divided_by_date = divide_range_in_days({ start: rangeStart, end: rangeEnd }).each { |key, value| value.each { |hash|
-            hash[:slots] = event.weekly_availability.hours.where(day_id: key).each_with_object([]) do |value, arr|
-              arr << value.get_start_end2(hash[:date])
+            hash[:slots] = event.weekly_availability.hours.where(day_id: key).each_with_object([]) do |hour, arr|
+              arr << hour.get_start_end(hash[:date], hour[:time_zone])
             end
                              .map { |v| create_slot([], event.increment_amount, event.duration, { start: v[:start], end: v[:end] }) }.flatten
           }
@@ -143,6 +143,16 @@ module TeoTime
             }
           end
         end
+
+        # /events/:id/bookings
+        desc 'get single event'
+        get 'bookings' do
+          # authenticate!
+          # authorize! :read, Event
+          event = Event.find(params[:id])
+          event.bookings.order(start: :asc)
+        end
+
       end
     end
   end

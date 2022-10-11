@@ -1,6 +1,6 @@
 module TimeHelper
   def overlaps?(range_one, range_two)
-    range_one[:start] <= range_two[:end] && range_two[:start] <= range_one[:end] || false
+    (range_one[:start] <= range_two[:end] && range_two[:start] <= range_one[:end]) || false
   end
 
   def create_slot (slots = [], incr = 0, event_duration = 60, range_availability)
@@ -44,6 +44,18 @@ module TimeHelper
 
   def date_to_hour_and_minute_format (date)
     date.strftime('%H:%M')
+  end
+
+  def min_to_h (min)
+    min / 60
+  end
+
+  def h_to_min(h)
+    h * 60
+  end
+
+  def set_time_zone_to_date (date, time_zone)
+    Time.find_zone(time_zone).local(date.year, date.month, date.day, date.hour, date.minute)
   end
 end
 
