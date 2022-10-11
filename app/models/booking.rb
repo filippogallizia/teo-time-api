@@ -37,6 +37,7 @@ class Booking < ApplicationRecord
     self.errors.add("Slot missing", "There is not a slot for this booking range") if !match
   end
 
+  ``
   scope :inside_range, ->(range) {
     where.not(Arel.sql("start > '#{range[:end]}' OR end < '#{range[:start]}'"))
   }
