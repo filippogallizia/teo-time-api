@@ -1,21 +1,21 @@
 class Hour < ApplicationRecord
   belongs_to :weekly_availability, optional: true
   belongs_to :day, optional: true
+  belongs_to :event, optional: true
+  belongs_to :trainer, :class_name => 'User', :foreign_key => "trainer_id", optional: true
   validates_presence_of :weekly_availability_id, :day_id, :start, :end, :time_zone
-  validate :hour_ranges_overlaps?
+  # validate :hour_ranges_overlaps?
 
   include TimeHelper
 
-  def get_start_end(date, time_zone = 'UTC')
-    if date
-      { start: add_minutes_to_specific_date(date, start, time_zone), end: add_minutes_to_specific_date(date, self.end, time_zone) }
-    else
-      { start: today_date_plus_minutes(start), end: today_date_plus_minutes(self.end) }
-    end
+  # TODO this fn always need to have a date
+  def add_time_zone_to_hour(date)
+    { start: add_minutes_to_specific_date(date, start, self.time_zone), end: add_minutes_to_specific_date(date, self.end, self.time_zone) }
   end
 
-  def today_date_plus_minutes (minutes)
-    DateTime.now.midnight + minutes.minutes
+  def today_date_plus_minutes (minutes, time_zone)
+    date_parsed = set_time_zone_to_date(DateTime.now.midnight, time_zone)
+    date_parsed + minutes.minutes
   end
 
   def hour_ranges_overlaps?
@@ -30,7 +30,6 @@ class Hour < ApplicationRecord
 
   def add_minutes_to_specific_date(date, minutes, time_zone)
     date_parsed = set_time_zone_to_date(date.midnight, time_zone)
-    # binding.pry
     date_parsed.midnight + minutes.minutes
   end
 end

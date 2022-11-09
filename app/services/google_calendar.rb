@@ -20,17 +20,22 @@ class GoogleCalendar
         'location': location,
         'description': description,
         'start': {
-          'date_time': DateTime.parse(start_time),
+          'date_time': start_time.to_datetime,
           'time_zone': time_zone
         },
         'end': {
-          'date_time': DateTime.parse(end_time),
+          'date_time': end_time.to_datetime,
           'time_zone': time_zone
         }
       })
   end
 
   def insert_event(event)
-    @service.insert_event(@calendar_id, event)
+    res = @service.insert_event(@calendar_id, event)
+    res
+  end
+
+  def delete_event(eventId)
+    @service.delete_event(@calendar_id, eventId)
   end
 end

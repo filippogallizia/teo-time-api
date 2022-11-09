@@ -4,16 +4,20 @@ module TeoTime
     helpers TimeHelper
     resource :events do
 
-      # /events/index
+      # /events
       desc 'List all events'
-      get :index do
+      get do
         # authenticate!
         # authorize! :read, Event
-        Event.all
+        @events = Event.includes(:weekly_availability)
+        # TODO check here
+        @events.map do |e|
+          e.with_weekly_availability
+        end
       end
 
       params do
-        requires :user_id, type: Integer, allow_blank: false, desc: "user_id"
+        requires :trainer_id, type: Integer, allow_blank: false, desc: "trainer_id"
         requires :weekly_availability_id, type: Integer, allow_blank: false, desc: "weekly_availability_id"
         requires :name, type: String, allow_blank: false, desc: "name"
         requires :increment_amount, type: Integer, allow_blank: false, desc: "increment_amount"
@@ -22,11 +26,11 @@ module TeoTime
 
       # /events/create
       desc 'Create a event'
-      post :create do
+      post :new do
         # authorize! :update, Event
         Event.create!(
           {
-            user_id: params[:user_id],
+            trainer_id: params[:trainer_id],
             name: params[:name],
             weekly_availability_id: params[:weekly_availability_id],
             increment_amount: params[:increment_amount],
@@ -73,12 +77,14 @@ module TeoTime
           rangeStart = params[:start].to_datetime
           rangeEnd = params[:end].to_datetime
           event = Event.find(params[:id])
+          event_hours = event.hours
 
           avail_divided_by_date = divide_range_in_days({ start: rangeStart, end: rangeEnd }).each { |key, value| value.each { |hash|
-            hash[:slots] = event.weekly_availability.hours.where(day_id: key).each_with_object([]) do |hour, arr|
-              arr << hour.get_start_end(hash[:date], hour[:time_zone])
-            end
-                             .map { |v| create_slot([], event.increment_amount, event.duration, { start: v[:start], end: v[:end] }) }.flatten
+            hash[:slots] = event_hours.where(day_id: key).to_a.map { |hour|
+              hour_start = hour.add_time_zone_to_hour(hash[:date])[:start]
+              hour_end = hour.add_time_zone_to_hour(hash[:date])[:end]
+              create_slot([], event.increment_amount, event.duration, { start: hour_start, end: hour_end })
+            }.flatten
           }
           }
 

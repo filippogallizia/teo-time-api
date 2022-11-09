@@ -2,13 +2,19 @@ module TeoTime
   class BookingsApi < Grape::API
     resource :bookings do
 
-      # /bookings/index
+      # /bookings
       desc 'List all bookings'
-      get :index do
+      get do
         # authenticate!
         # authorize! :read, Booking
-        binding.pry
-        Booking.all
+        # TODO is there a better way to do this?
+        Booking.all.each_with_object([]) do |booking, array|
+          hash = { **booking.attributes }
+          hash['user'] = booking.user
+          hash['trainer'] = booking.trainer
+          hash['event'] = booking.event
+          array << hash
+        end
       end
 
       # /bookings/create
@@ -40,8 +46,8 @@ module TeoTime
           Booking.find(params[:id])
         end
 
-        # /events/:id
-        desc 'Edit event'
+        # /bookings/:id
+        desc 'Edit bookings'
         put do
           # authenticate!
           # authorize! :update, Event
@@ -58,6 +64,25 @@ module TeoTime
           # binding.pry
           Booking.destroy(params[:id])
         end
+      end
+
+      resource :users do
+
+        desc 'Get booking for current_user'
+        get :current_user do
+          # binding.pry
+          authenticate!
+          Booking.where(user_id: current_user.id)
+        end
+
+        route_param :id do
+          # /bookings/users/:id
+          desc 'Get booking by user id'
+          get do
+            Booking.where(user_id: params[:id])
+          end
+        end
+
       end
     end
   end

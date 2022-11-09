@@ -26,7 +26,7 @@ class BookingTest < ActionDispatch::IntegrationTest
   #   event = create(:event, user: @user, weekly_availability: weekly_availability)
   #   create(:hour, start: 480, end: 720, weekly_availability: weekly_availability, day: day, time_zone: 'Europe/Rome')
   #   create(:hour, start: 780, end: 1200, weekly_availability: weekly_availability, day: day, time_zone: 'Europe/Rome')
-  #   get "http://localhost:3000/api/events/#{event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
+  #   get "http://localhost:3000/events/#{event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
   #   res = response.body
   #   day_of_work = JSON.parse(res).select { |d| d['day_id'] == day.id }[0]
   #   working_start = required_range[:start].to_datetime.at_beginning_of_day + 480.minutes
@@ -50,7 +50,7 @@ class BookingTest < ActionDispatch::IntegrationTest
     create(:hour, start: 480, end: 720, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
     create(:hour, start: 780, end: 1200, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
 
-    get "http://localhost:3000/api/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
+    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
     res = response.body
     day_of_work = JSON.parse(res).select { |d| d['day_id'] == day.id }[0]
     slot_one_start = day_of_work['slots'].first["start"].to_datetime
@@ -69,7 +69,7 @@ class BookingTest < ActionDispatch::IntegrationTest
     create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
 
     @booking = FactoryBot.create(:booking, start: "2022-11-18T08:00:00.000Z", end: "2022-11-18T09:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    get "http://localhost:3000/api/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
+    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
     res = response.body
     day_of_work = JSON.parse(res).select { |d| d['day_id'] == day.id }[0]
     slot_one_start = day_of_work['slots'].first["start"].to_datetime
@@ -81,14 +81,14 @@ class BookingTest < ActionDispatch::IntegrationTest
     required_range = { start: week_days_with_datetime(:monday), end: week_days_with_datetime(:sunday) }
     day = create(:day, name: 'wednesday', id: 5)
     create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
-    get "http://localhost:3000/api/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
+    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
     res = JSON.parse(response.body)
     assert_equal res.size, 7
   end
 
   test "test no hours, no slots" do
     required_range = { start: week_days_with_datetime(:monday), end: week_days_with_datetime(:sunday) }
-    get "http://localhost:3000/api/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
+    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
     res = JSON.parse(response.body)
     res.each { |day| assert day['slots'].length, 0 }
   end
@@ -99,19 +99,19 @@ class BookingTest < ActionDispatch::IntegrationTest
     create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
     create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
 
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T08:00:00.000Z", end: "2022-11-18T09:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T09:30:00.000Z", end: "2022-11-18T10:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T11:00:00.000Z", end: "2022-11-18T12:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T13:00:00.000Z", end: "2022-11-18T14:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T14:30:00.000Z", end: "2022-11-18T15:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T16:00:00.000Z", end: "2022-11-18T17:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T17:30:00.000Z", end: "2022-11-18T18:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T19:00:00.000Z", end: "2022-11-18T20:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T07:00:00.000Z", end: "2022-11-18T08:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T08:30:00.000Z", end: "2022-11-18T09:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T10:00:00.000Z", end: "2022-11-18T11:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T12:00:00.000Z", end: "2022-11-18T13:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T13:30:00.000Z", end: "2022-11-18T14:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T15:00:00.000Z", end: "2022-11-18T16:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T16:30:00.000Z", end: "2022-11-18T17:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T18:00:00.000Z", end: "2022-11-18T19:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
 
-    get "http://localhost:3000/api/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
+    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
 
     res = JSON.parse(response.body)
-    res.each { |day| assert day['slots'].length, 0 if day['day_id'] == 5 }
+    res.each { |day| assert_equal day['slots'].length, 0 if day['day_id'] == 5 }
   end
 
   test "test return error if booking is not compatible with slot" do
@@ -128,12 +128,11 @@ class BookingTest < ActionDispatch::IntegrationTest
     create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Samara')
     create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Samara')
 
-    b = Booking.create({ start: "2022-11-18T07:00:00.000Z", end: "2022-11-18T08:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer })
+    b = Booking.create({ start: "2022-11-18T09:30:00.000+04:00", end: "2022-11-18T10:30:00.000+04:00", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer })
 
-    get "http://localhost:3000/api/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
+    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
 
     res = JSON.parse(response.body)
-    binding.pry
     day_of_work = res.select { |d| d['day_id'] == day.id }[0]
     slot_one_start = day_of_work['slots'].first["start"].to_datetime
 

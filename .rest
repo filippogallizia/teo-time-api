@@ -1,114 +1,135 @@
 // -- USERS --
 ###
-POST http://localhost:3000/users/sign_in
+POST http://localhost:5000/users/sign_in
 content-type: application/json
 
 {
   "user": {
-    "email": "galliziaaaaafilippoo@gmail.com",
-    "password": "filoculo"
+    "email": "tim@tim.com",
+    "password": "magicTim"
   }
 }
 
 ###
-POST http://localhost:3000/users
+GET http://localhost:5000/users/me
+content-type: application/json
+
+###
+GET http://localhost:5000/users
+content-type: application/json
+
+###
+GET http://localhost:5000/users?only_trainers=true
+content-type: application/json
+
+###
+POST http://localhost:5000/users
 content-type: application/json
 
 {
   "user": {
-    "email": "galliziaaaaafilippoo@gmail.com",
-    "password": "filoculo",
-    "password_confirmation": "filoculo",
-    "role_id": 1
+    "email": "tim@tim.com",
+    "password": "magicTim",
+    "password_confirmation": "magicTim",
+    "role_id": 2
   }
 }
 
 ###
-DELETE http://localhost:3000/users/sign_out
+DELETE http://localhost:5000/users/sign_out
 
 ###
-DELETE http://localhost:3000/users/
+DELETE http://localhost:5000/users/
 
 // --BOOKINGS--
 
 ###
-GET http://localhost:3000/api/bookings/index
+GET http://localhost:5000/bookings
 Content-Type: application/json
 
 ###
-GET http://localhost:3000/api/bookings/36
+GET http://localhost:5000/bookings/36
 Content-Type: application/json
 
 ###
-PUT http://localhost:3000/api/bookings/71
+PUT http://localhost:5000/bookings/71
 Content-Type: application/json
 
 ###
-POST http://localhost:3000/api/bookings/create
+POST http://localhost:5000/bookings/create
 Content-Type: application/json
 
+  //  probably I can remove the weekly availability
 {
   "user_id": 1,
   "trainer_id": "1",
-  "start": "2022-11-21T08:00:00.000Z",
-  "end": "2022-11-21T09:00:00.000Z",
-  "event_id": 1,
+  "start": "2022-10-21T11:00:00.000Z",
+  "end": "2022-10-21T12:00:00.000Z",
+  "event_id": 2,
   "weekly_availability_id": 1
 }
 
 ###
-DELETE http://localhost:3000/api/bookings/1
+GET http://localhost:5000/bookings/users/1
+Content-Type: application/json
+
+###
+GET http://localhost:5000/bookings/users/current_user
+Content-Type: application/json
+
+###
+DELETE http://localhost:5000/bookings/1
 Content-Type: application/json
 
 // --EVENTS--
 
 ###
-GET http://localhost:3000/api/events/index
+GET http://localhost:5000/events
 Content-Type: application/json
 
 ###
-GET http://localhost:3000/api/events/2
+GET http://localhost:5000/events/3
 Content-Type: application/json
 
 ###
-PUT http://localhost:3000/api/events/2
+PUT http://localhost:5000/events/2
 Content-Type: application/json
 
 ###
-POST http://localhost:3000/api/events/create
+POST http://localhost:5000/events/new
 Content-Type: application/json
 
 {
-  "user_id": "1",
-  "name": "filo_event",
+  "trainer_id": "1",
+  "name": "teo_event",
   "weekly_availability_id": 1,
-  "increment_amount": 30,
-  "duration": 60
+  "increment_amount": 15,
+  "duration": 30
 }
 
 ###
-DELETE http://localhost:3000/api/events/1
+DELETE http://localhost:5000/events/1
 Content-Type: application/json
 
 ###
-GET http://localhost:3000/api/events/1/available_times?start=2022-11-17T06:00:00.000Z&end=2022-11-21T21:00:00.000Z
+GET http://localhost:5000/events/4/available_times?start=2022-11-17T06:00:00.000Z&end=2022-11-21T21:00:00.000Z
 
 ###
-GET http://localhost:3000/api/events/1/bookings
+GET http://localhost:5000/events/1/bookings
 Content-Type: application/json
 
 // --WEEKLY_AVAILABILITIES--
 
 ###
-GET http://localhost:3000/api/weekly_availabilities/index
+GET http://localhost:5000/weekly_availabilities
 Content-Type: application/json
 
 ###
-GET http://localhost:3000/api/weekly_availabilities/1
+GET http://localhost:5000/weekly_availabilities/1
 Content-Type: application/json
 
 ###
-POST http://localhost:3000/api/weekly_availabilities/create
+POST http://localhost:5000/weekly_availabilities/new
 Content-Type: application/json
 
 {
@@ -116,10 +137,24 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/api/weekly_availabilities/1
+DELETE http://localhost:5000/weekly_availabilities/1
 Content-Type: application/json
 
 ###
-GET http://localhost:3000/api/weekly_availabilities/1/hours
+GET http://localhost:5000/weekly_availabilities/1/hours
 Content-Type: application/json
+
+// --HOURS--
+###
+PUT http://localhost:5000/hours/1
+Content-Type: application/json
+
+{
+  "start": 300,
+  "end": 200,
+  "event_id": 5,
+  "time_zone": "europe/rome"
+}
+
+
 

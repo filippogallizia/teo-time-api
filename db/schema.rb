@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_10_143026) do
+ActiveRecord::Schema.define(version: 2022_11_01_075208) do
 
   create_table "bookings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
     t.datetime "start"
     t.datetime "end"
-    t.integer "calendarEventId"
+    t.string "calendarEventId"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
@@ -41,10 +41,10 @@ ActiveRecord::Schema.define(version: 2022_10_10_143026) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "weekly_availability_id"
-    t.bigint "user_id"
     t.integer "duration"
     t.integer "increment_amount"
-    t.index ["user_id"], name: "index_events_on_user_id"
+    t.bigint "trainer_id"
+    t.index ["trainer_id"], name: "index_events_on_trainer_id"
     t.index ["weekly_availability_id"], name: "index_events_on_weekly_availability_id"
   end
 
@@ -56,7 +56,9 @@ ActiveRecord::Schema.define(version: 2022_10_10_143026) do
     t.bigint "weekly_availability_id"
     t.bigint "day_id"
     t.string "time_zone"
+    t.bigint "event_id"
     t.index ["day_id"], name: "index_hours_on_day_id"
+    t.index ["event_id"], name: "index_hours_on_event_id"
     t.index ["weekly_availability_id"], name: "index_hours_on_weekly_availability_id"
   end
 
@@ -88,7 +90,7 @@ ActiveRecord::Schema.define(version: 2022_10_10_143026) do
 
   add_foreign_key "bookings", "users"
   add_foreign_key "bookings", "users", column: "trainer_id"
-  add_foreign_key "events", "users"
+  add_foreign_key "events", "users", column: "trainer_id"
   add_foreign_key "events", "weekly_availabilities"
   add_foreign_key "users", "roles"
 end

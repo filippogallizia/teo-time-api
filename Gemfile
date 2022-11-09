@@ -70,3 +70,4 @@ gem 'devise'
 gem 'cancancan'
 #google calendar
 gem 'google-api-client', require: 'google/apis/calendar_v3'
+gem 'rack-cors'

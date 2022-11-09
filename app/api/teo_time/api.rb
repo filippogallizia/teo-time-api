@@ -2,7 +2,6 @@ module TeoTime
   class API < Grape::API
     version 'v1', using: :header, vendor: 'teo_time'
     format :json
-    prefix :api
 
     class NotAuthenticated < StandardError
       def initialize(msg = nil)
@@ -100,5 +99,6 @@ module TeoTime
     mount TeoTime::BookingsApi
     mount TeoTime::EventsApi
     mount TeoTime::WeeklyAvailabilityApi
+    mount TeoTime::HoursApi
   end
 end
