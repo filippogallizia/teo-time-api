@@ -41,6 +41,12 @@ module TeoTime
           hour = Hour.find(params[:id])
           hour.update!(start: params[:start], end: params[:end], event_id: params[:event_id], time_zone: params[:time_zone])
         end
+
+        desc 'Delete'
+        delete do
+          hour = Hour.find(params[:id])
+          hour.destroy!
+        end
       end
 
     end
