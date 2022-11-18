@@ -20,7 +20,8 @@ module TeoTime
       # /bookings/create
       desc 'Create a booking'
       post :create do
-        # authorize! :update, Booking
+        authenticate!
+        authorize! :update, Booking
         Booking.create!(
           {
             user_id: params[:user_id],
@@ -41,16 +42,16 @@ module TeoTime
         # /bookings/:id
         desc 'get single booking'
         get do
-          # authenticate!
-          # authorize! :read, Booking
+          authenticate!
+          authorize! :read, Booking
           Booking.find(params[:id])
         end
 
         # /bookings/:id
         desc 'Edit bookings'
         put do
-          # authenticate!
-          # authorize! :update, Event
+          authenticate!
+          authorize! :update, Event
           # binding.pry
           booking = Booking.find(params[:id])
           # booking.update(weekly_availability_id: 1)
@@ -59,10 +60,11 @@ module TeoTime
         # /bookings/:id
         desc 'Delete booking'
         delete do
-          # authenticate!
-          # authorize! :update, Booking
+          authenticate!
+          authorize! :update, Booking
           # binding.pry
           Booking.destroy(params[:id])
+          'test'
         end
       end
 

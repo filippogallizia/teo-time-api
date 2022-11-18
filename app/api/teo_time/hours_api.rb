@@ -5,7 +5,7 @@ module TeoTime
     resource :hours do
       params do
         requires :day_id, type: Integer, allow_blank: false, desc: "day_id"
-        requires :event_id, type: Integer, allow_blank: false, desc: "event_id"
+        optional :event_id, type: Integer, desc: "event_id"
         requires :weekly_availability_id, type: Integer, allow_blank: false, desc: "weekly_availability_id"
         requires :time_zone, type: String, allow_blank: false, desc: "time_zone"
         requires :start, type: Integer, allow_blank: false, desc: "start"

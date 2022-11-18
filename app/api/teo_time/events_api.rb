@@ -6,14 +6,17 @@ module TeoTime
 
       # /events
       desc 'List all events'
+      params do
+        optional :weekly_availability_id, type: Integer, allow_blank: false, desc: "weekly_availability_id"
+      end
       get do
-        # authenticate!
-        # authorize! :read, Event
-        @events = Event.includes(:weekly_availability)
-        # TODO check here
-        @events.map do |e|
-          e.with_weekly_availability
+        authorize! :read, Event
+        if params["weekly_availability"]
+          Event.includes(:weekly_availability).filter_by_weekly_availability(params["weekly_availability"])
+        else
+          Event.includes(:weekly_availability).as_json
         end
+
       end
 
       params do
@@ -27,7 +30,7 @@ module TeoTime
       # /events/create
       desc 'Create a event'
       post :new do
-        # authorize! :update, Event
+        authorize! :update, Event
         Event.create!(
           {
             trainer_id: params[:trainer_id],
@@ -47,28 +50,25 @@ module TeoTime
         # /events/:id
         desc 'get single event'
         get do
-          # authenticate!
-          # authorize! :read, Event
+          authorize! :read, Event
           Event.find(params[:id])
         end
 
         # /events/:id
         desc 'Delete event'
         delete do
-          # authenticate!
-          # authorize! :update, Event
-          # binding.pry
+          authenticate!
+          authorize! :update, Event
           Event.destroy(params[:id])
         end
 
         # /events/:id
         desc 'Edit event'
         put do
-          # authenticate!
-          # authorize! :update, Event
-          # binding.pry
+          authenticate!
+          authorize! :update, Event
           event = Event.find(params[:id])
-          event.update(weekly_availability_id: 1)
+          event.update(weekly_availability_id: params[:weekly_availability_id], name: params[:name], duration: params[:duration], increment_amount: params[:increment_amount], trainer_id: params[:trainer_id])
         end
 
         # /events/:id/available_times

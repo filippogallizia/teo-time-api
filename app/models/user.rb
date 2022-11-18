@@ -14,4 +14,16 @@ class User < ApplicationRecord
   def set_default_role
     self.role ||= Role.find_by_name('client')
   end
+
+  def is_trainer
+    self.role.id == 2
+  end
+
+  def is_admin
+    self.role.id == 3
+  end
+
+  def is_client
+    true if !is_trainer && !is_admin
+  end
 end

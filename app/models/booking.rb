@@ -48,8 +48,12 @@ class Booking < ApplicationRecord
   end
 
   def delete_from_calendar
-    calendar = GoogleCalendar.new
-    calendar.delete_event(self.calendarEventId)
+    begin
+      calendar = GoogleCalendar.new
+      calendar.delete_event(self.calendarEventId)
+    rescue
+      puts 'calendar event was not found'
+    end
   end
 
   ``

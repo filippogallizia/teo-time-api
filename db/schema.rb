@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_11_01_075208) do
+ActiveRecord::Schema.define(version: 2022_11_14_073935) do
 
   create_table "bookings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
     t.datetime "start"
@@ -91,6 +91,5 @@ ActiveRecord::Schema.define(version: 2022_11_01_075208) do
   add_foreign_key "bookings", "users"
   add_foreign_key "bookings", "users", column: "trainer_id"
   add_foreign_key "events", "users", column: "trainer_id"
-  add_foreign_key "events", "weekly_availabilities"
   add_foreign_key "users", "roles"
 end

@@ -5,16 +5,19 @@ class Ability
 
   def initialize(current_user)
     can :read, Booking
+    can :read, Event
 
     if current_user&.is_client
       can :update, Booking, user_id: current_user.id
     end
 
     if current_user&.is_trainer
-      can :update, Booking
+      can :update, Booking, trainer_id: current_user.id
+      can :update, Event, trainer_id: current_user.id
+
     end
 
-    if current_user&.is_super_user
+    if current_user&.is_admin
       can :manage, :all
     end
 

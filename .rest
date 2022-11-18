@@ -156,5 +156,23 @@ Content-Type: application/json
   "time_zone": "europe/rome"
 }
 
+###
+PUT http://localhost:5000/users/password
+Content-Type: application/json
+
+{
+  "reset_password_token": "bAsrc6pGzbK_xCuXmzCz"
+}
+
+###
+POST http://localhost:5000/payments/create_payment_intent
+Content-Type: application/json
+
+{
+  "email": "galliziafilippo@gmail.com",
+  "idempotency_key": "idempotency_key"
+}
+
+
 
 

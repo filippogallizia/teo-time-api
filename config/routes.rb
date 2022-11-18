@@ -2,7 +2,8 @@ Rails.application.routes.draw do
 
   scope defaults: { format: :json } do
     devise_for :users, controllers: {
-      sessions: 'users/sessions'
+      sessions: 'users/sessions',
+      passwords: 'users/passwords'
     }
     devise_scope :user do
       get 'users/me', to: 'users/sessions#me'
