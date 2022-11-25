@@ -3,7 +3,7 @@ class Hour < ApplicationRecord
   belongs_to :day, optional: true
   belongs_to :event, optional: true
   belongs_to :trainer, :class_name => 'User', :foreign_key => "trainer_id", optional: true
-  validates_presence_of :weekly_availability_id, :day_id, :start, :end, :time_zone
+  validates_presence_of :weekly_availability_id, :day_id, :date, :start, :end, :time_zone
   # validate :hour_ranges_overlaps?
 
   include TimeHelper

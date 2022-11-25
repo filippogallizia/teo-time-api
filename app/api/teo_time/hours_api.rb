@@ -4,12 +4,13 @@ module TeoTime
     helpers TimeHelper
     resource :hours do
       params do
-        requires :day_id, type: Integer, allow_blank: false, desc: "day_id"
-        optional :event_id, type: Integer, desc: "event_id"
-        requires :weekly_availability_id, type: Integer, allow_blank: false, desc: "weekly_availability_id"
-        requires :time_zone, type: String, allow_blank: false, desc: "time_zone"
-        requires :start, type: Integer, allow_blank: false, desc: "start"
-        requires :end, type: Integer, allow_blank: false, desc: "end"
+        requires :day_id, type: Integer, allow_blank: false
+        optional :date, type: Date, allow_blank: false
+        optional :event_id, type: Integer, allow_blank: false
+        requires :weekly_availability_id, type: Integer, allow_blank: false
+        requires :time_zone, type: String, allow_blank: false
+        requires :start, type: Integer, allow_blank: false
+        requires :end, type: Integer, allow_blank: false
       end
 
       # /hours/new
@@ -23,7 +24,8 @@ module TeoTime
             weekly_availability_id: params[:weekly_availability_id],
             start: params[:start],
             end: params[:end],
-            event_id: params[:event_id]
+            event_id: params[:event_id],
+            date: params[:date],
           }
         )
       end

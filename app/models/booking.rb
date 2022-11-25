@@ -16,7 +16,11 @@ class Booking < ApplicationRecord
     self.read_attribute(:start).wday
   end
 
-  private
+  def give_date_to_recurrent_bookings(range, recurrent_bookings)
+    recurrent_bookings.start = apply_time_to_another_date(range[:date], recurrent_bookings[:start])
+    recurrent_bookings.end = apply_time_to_another_date(range[:date], recurrent_bookings[:end])
+    recurrent_bookings
+  end
 
   def overlaps(range_one, range_two)
     # self.errors.add("This booking", "is overlaping an existing one") if range_one[:start] <= range_two[:end] && range_two[:start] <= range_one[:end]
@@ -60,4 +64,5 @@ class Booking < ApplicationRecord
   scope :inside_range, ->(range) {
     where.not(Arel.sql("start > '#{range[:end]}' OR end < '#{range[:start]}'"))
   }
+
 end

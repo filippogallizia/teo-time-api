@@ -4,7 +4,6 @@ class Users::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
 
   def me
-    # binding.pry
     if current_user
       res = { user: current_user }
       respond_with res

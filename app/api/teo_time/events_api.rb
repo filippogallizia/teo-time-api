@@ -72,25 +72,31 @@ module TeoTime
         end
 
         # /events/:id/available_times
-        desc 'Get available slot times'
+        desc 'Get available times'
         get 'available_times' do
           rangeStart = params[:start].to_datetime
           rangeEnd = params[:end].to_datetime
           event = Event.find(params[:id])
-          event_hours = event.hours
+          avail_divided_by_date = create_avail_divided_by_date(rangeStart, rangeEnd, event)
+          p avail_divided_by_date, 'avail_divided_by_date'
+          # recurring bookings
+          recurrent_bookings = event.bookings.where({ recurrent: true })
+          recurring_bookings_with_updated_date = avail_divided_by_date.each_with_object([]) do |(day, range), array|
+            recurrent_bookings.each do |book|
+              if day === book[:start].wday
+                range.each do |r|
+                  array << book.give_date_to_recurrent_bookings(r, book)
+                end
+              end
+            end
+            array
+          end
+          # normal bookings
+          bookings_inside_range_grouped_by_day = event.bookings.where({ recurrent: nil }).inside_range({ start: rangeStart, end: rangeEnd })
 
-          avail_divided_by_date = divide_range_in_days({ start: rangeStart, end: rangeEnd }).each { |key, value| value.each { |hash|
-            hash[:slots] = event_hours.where(day_id: key).to_a.map { |hour|
-              hour_start = hour.add_time_zone_to_hour(hash[:date])[:start]
-              hour_end = hour.add_time_zone_to_hour(hash[:date])[:end]
-              create_slot([], event.increment_amount, event.duration, { start: hour_start, end: hour_end })
-            }.flatten
-          }
-          }
+          all_bookings_grouped_by_day = [*recurring_bookings_with_updated_date, *bookings_inside_range_grouped_by_day].group_by { |b| b.start.wday }
 
-          bookings_inside_range_grouped_by_day = event.bookings.inside_range({ start: rangeStart, end: rangeEnd }).group_by { |b| b.start.wday }
-
-          if bookings_inside_range_grouped_by_day.size == 0
+          if all_bookings_grouped_by_day.size == 0
             avail_divided_by_date.each_with_object([]) { |(day, avail), array|
               avail.each { |avl|
                 array << {
@@ -102,7 +108,7 @@ module TeoTime
               }
             }
           else
-            bookings_inside_range_grouped_by_day.each_with_object([]) { |(bkg_day_id, bookings), array|
+            all_bookings_grouped_by_day.each_with_object([]) { |(bkg_day_id, bookings), array|
               avail_divided_by_date.each { |day, avail|
                 if day == bkg_day_id
                   bookings.each { |bkg|
@@ -163,3 +169,47 @@ module TeoTime
     end
   end
 end
+
+# Get available slot times
+# return value {
+#   "day_id": 1,
+#     "bookings": [
+#     {
+#       "start": "2022-11-28T12:30:00.000Z",
+#       "end": "2022-11-28T13:30:00.000Z"
+#     }
+#   ],
+#     "date": "2022-11-28T01:01:01.000+00:00",
+#     "slots": [
+#     {
+#       "start": "2022-11-28T12:00:00.000+01:00",
+#       "end": "2022-11-28T13:00:00.000+01:00"
+#     },
+#   ]
+# }
+
+#step 1 - avail_divided_by_date
+#  {1=>
+#    [
+#     {:wday=>1,
+#      :date=>Mon, 21 Nov 2022 01:01:01 +0000,
+#      :range=>{:start=>Mon, 21 Nov 2022 01:01:01 +0000, :end=>Mon, 21 Nov 2022 23:59:00 +0000},
+#      :slots=>[{:start=>Mon, 21 Nov 2022 12:00:00 CET +01:00, :end=>Mon, 21 Nov 2022 13:00:00 CET +01:00}]
+#     }
+#   ]
+# }
+
+#step 2 - bookings_inside_range_grouped_by_day
+# {1=>
+#    [#<Booking:0x000000010e9da170
+#      id: 17,
+#      start: Mon, 21 Nov 2022 11:00:00 UTC +00:00,
+#  end: Mon, 21 Nov 2022 12:00:00 UTC +00:00,
+#  calendarEventId: "f9a4esdiqkobuc29njuhth7mfk",
+#  created_at: Fri, 18 Nov 2022 14:20:30 UTC +00:00,
+#  updated_at: Fri, 18 Nov 2022 14:20:30 UTC +00:00,
+#  user_id: 2,
+#  event_id: 8,
+#  weekly_availability_id: 16,
+#  trainer_id: 2,
+#  time_zone: nil>]}

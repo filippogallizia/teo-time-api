@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_11_14_073935) do
+ActiveRecord::Schema.define(version: 2022_11_25_155642) do
 
   create_table "bookings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
     t.datetime "start"
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(version: 2022_11_14_073935) do
     t.bigint "weekly_availability_id"
     t.bigint "trainer_id"
     t.string "time_zone"
+    t.boolean "recurrent"
     t.index ["event_id"], name: "index_bookings_on_event_id"
     t.index ["trainer_id"], name: "index_bookings_on_trainer_id"
     t.index ["user_id"], name: "index_bookings_on_user_id"
@@ -31,7 +32,6 @@ ActiveRecord::Schema.define(version: 2022_11_14_073935) do
 
   create_table "days", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
     t.string "name"
-    t.string "string"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(version: 2022_11_14_073935) do
     t.bigint "day_id"
     t.string "time_zone"
     t.bigint "event_id"
+    t.date "date"
     t.index ["day_id"], name: "index_hours_on_day_id"
     t.index ["event_id"], name: "index_hours_on_event_id"
     t.index ["weekly_availability_id"], name: "index_hours_on_weekly_availability_id"

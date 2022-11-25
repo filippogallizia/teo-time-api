@@ -29,7 +29,8 @@ module TeoTime
             start: params[:start].to_datetime,
             end: params[:end].to_datetime,
             event_id: params[:event_id],
-            weekly_availability_id: params[:weekly_availability_id]
+            weekly_availability_id: params[:weekly_availability_id],
+            #TODO think if remove this column from booking
           }
         )
       end

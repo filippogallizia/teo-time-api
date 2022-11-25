@@ -16,7 +16,7 @@ class BookingTest < ActionDispatch::IntegrationTest
     @trainer = create(:user, email: "trainer@gmail.com", role: @role_trainer)
     @user = create(:user, email: "user@gmail.com", role: @role)
     @weekly_availability = create(:weekly_availability)
-    @event = create(:event, user: @user, weekly_availability: @weekly_availability, increment_amount: @increment, duration: @duration)
+    @event = create(:event, trainer: @user, weekly_availability: @weekly_availability, increment_amount: @increment, duration: @duration)
   end
 
   # test "if there are no bookings, first_slot_start = day_start and last_slot_end = day_end" do
@@ -47,8 +47,8 @@ class BookingTest < ActionDispatch::IntegrationTest
   test "test event increment and duration" do
     required_range = { start: '2022-11-18T06:00:00.000Z', end: '2022-11-18T21:00:00.000Z' }
     day = create(:day, name: 'wednesday', id: 5)
-    create(:hour, start: 480, end: 720, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
-    create(:hour, start: 780, end: 1200, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
+    create(:hour, start: 480, end: 720, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
+    create(:hour, start: 780, end: 1200, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
 
     get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
     res = response.body
@@ -65,22 +65,18 @@ class BookingTest < ActionDispatch::IntegrationTest
   test "test av_start > booking_finish" do
     required_range = { start: '2022-11-18T06:00:00.000Z', end: '2022-11-18T21:00:00.000Z' }
     day = create(:day, name: 'wednesday', id: 5)
-    create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
-    create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
+    create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
+    create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
 
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T08:00:00.000Z", end: "2022-11-18T09:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
-    res = response.body
-    day_of_work = JSON.parse(res).select { |d| d['day_id'] == day.id }[0]
-    slot_one_start = day_of_work['slots'].first["start"].to_datetime
-    # av start after booking finish
-    assert slot_one_start > "2022-11-18T08:59:00.000Z".to_datetime
+    assert_raises do
+      @booking = FactoryBot.create(:booking, start: "2022-11-18T08:00:00.000Z", end: "2022-11-18T09:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
+    end
   end
 
   test "test range of 7 days returns 7 days" do
     required_range = { start: week_days_with_datetime(:monday), end: week_days_with_datetime(:sunday) }
     day = create(:day, name: 'wednesday', id: 5)
-    create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
+    create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
     get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
     res = JSON.parse(response.body)
     assert_equal res.size, 7
@@ -96,8 +92,8 @@ class BookingTest < ActionDispatch::IntegrationTest
   test "test full booked, no slots" do
     required_range = { start: week_days_with_datetime(:monday), end: week_days_with_datetime(:sunday) }
     day = create(:day, name: 'wednesday', id: 5)
-    create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
-    create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
+    create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
+    create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
 
     @booking = FactoryBot.create(:booking, start: "2022-11-18T07:00:00.000Z", end: "2022-11-18T08:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
     @booking = FactoryBot.create(:booking, start: "2022-11-18T08:30:00.000Z", end: "2022-11-18T09:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
@@ -116,7 +112,7 @@ class BookingTest < ActionDispatch::IntegrationTest
 
   test "test return error if booking is not compatible with slot" do
     day = create(:day, name: 'wednesday', id: 5)
-    create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Europe/Rome')
+    create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
     b = Booking.create({ start: "2022-11-18T08:00:00.000Z", end: "2022-11-18T12:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer })
     assert_equal b.errors.messages[:'Slot missing'][0], "There is not a slot for this booking range"
   end
@@ -125,8 +121,8 @@ class BookingTest < ActionDispatch::IntegrationTest
     required_range = { start: '2022-11-18T06:00:00.000Z', end: '2022-11-19T08:00:00.000Z' }
     day = create(:day, name: 'wednesday', id: 5)
 
-    create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Samara')
-    create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, day: day, time_zone: 'Samara')
+    create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Samara')
+    create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Samara')
 
     b = Booking.create({ start: "2022-11-18T09:30:00.000+04:00", end: "2022-11-18T10:30:00.000+04:00", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer })
 

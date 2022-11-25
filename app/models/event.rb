@@ -17,4 +17,9 @@ class Event < ApplicationRecord
       weekly_availability_name: self.weekly_availability.name
     }
   end
+
+  def hours_with_date_or_wday (date, day_id)
+    hours_with_date = self.hours.where(date: date)
+    hours_with_date.length > 0 ? hours_with_date : self.hours.where(day_id: day_id)
+  end
 end

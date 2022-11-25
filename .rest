@@ -61,12 +61,13 @@ Content-Type: application/json
 
   //  probably I can remove the weekly availability
 {
-  "user_id": 1,
-  "trainer_id": "1",
-  "start": "2022-10-21T11:00:00.000Z",
-  "end": "2022-10-21T12:00:00.000Z",
-  "event_id": 2,
-  "weekly_availability_id": 1
+  "user_id": 2,
+  "trainer_id": 1,
+  "start": "2022-12-21T11:00:00.000Z",
+  "end": "2022-12-21T12:00:00.000Z",
+  "event_id": 9,
+  "weekly_availability_id": 16,
+  "recurrent": true
 }
 
 ###
@@ -165,6 +166,21 @@ Content-Type: application/json
 }
 
 ###
+// --HOURS_OVERRIDE--
+POST http://localhost:5000/hours/new
+Content-Type: application/json
+
+{
+  "weekly_availability_id": 16,
+  "start": 300,
+  "end": 200,
+  "event_id": 5,
+  "time_zone": "europe/rome",
+  "date": "2022/11/26"
+}
+
+###
+// --PAYMENTS--
 POST http://localhost:5000/payments/create_payment_intent
 Content-Type: application/json
 
