@@ -110,6 +110,25 @@ class BookingTest < ActionDispatch::IntegrationTest
     res.each { |day| assert_equal day['slots'].length, 0 if day['day_id'] == 5 }
   end
 
+  test "test override weekly_availability" do
+    required_range = { start: week_days_with_datetime(:monday), end: week_days_with_datetime(:sunday) }
+    day = create(:day, id: 5)
+    random_wednesday = '2022/11/25'
+    random_wednesday_required_range_start = '2022-11-25T00:00:00.000Z'
+    random_wednesday_required_range_end = '2022-11-25T23:00:00.000Z'
+
+    create(:hour, start: 8 * 60, end: 9 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
+    create(:hour, start: 10 * 60, end: 11 * 60, weekly_availability: @weekly_availability, event: @event, date: random_wednesday, day_id: 5, time_zone: 'Europe/Rome')
+    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
+    res1 = JSON.parse(response.body)
+    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{random_wednesday_required_range_start}&end=#{random_wednesday_required_range_end}"
+    res2 = JSON.parse(response.body)
+
+    recurrent_wednesday_first_slot = res1.find { |day| day["day_id"] == 5 }['slots'][0]
+    overridden_wednesday_first_slot = res2.find { |day| day["day_id"] == 5 }['slots'][0]
+    assert_not_equal recurrent_wednesday_first_slot, overridden_wednesday_first_slot
+  end
+
   test "test return error if booking is not compatible with slot" do
     day = create(:day, name: 'wednesday', id: 5)
     create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')

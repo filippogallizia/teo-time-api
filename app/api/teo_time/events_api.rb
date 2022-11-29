@@ -77,11 +77,10 @@ module TeoTime
           rangeStart = params[:start].to_datetime
           rangeEnd = params[:end].to_datetime
           event = Event.find(params[:id])
-          avail_divided_by_date = create_avail_divided_by_date(rangeStart, rangeEnd, event)
-          p avail_divided_by_date, 'avail_divided_by_date'
+          avail_grouped_by_wday = create_avail_divided_by_date(rangeStart, rangeEnd, event)
           # recurring bookings
           recurrent_bookings = event.bookings.where({ recurrent: true })
-          recurring_bookings_with_updated_date = avail_divided_by_date.each_with_object([]) do |(day, range), array|
+          recurring_bookings_with_updated_date = avail_grouped_by_wday.each_with_object([]) do |(day, range), array|
             recurrent_bookings.each do |book|
               if day === book[:start].wday
                 range.each do |r|
@@ -92,12 +91,12 @@ module TeoTime
             array
           end
           # normal bookings
-          bookings_inside_range_grouped_by_day = event.bookings.where({ recurrent: nil }).inside_range({ start: rangeStart, end: rangeEnd })
+          bookings_inside_range_grouped_by_wday = event.bookings.where({ recurrent: nil }).inside_range({ start: rangeStart, end: rangeEnd })
 
-          all_bookings_grouped_by_day = [*recurring_bookings_with_updated_date, *bookings_inside_range_grouped_by_day].group_by { |b| b.start.wday }
+          all_bookings_grouped_by_wday = [*recurring_bookings_with_updated_date, *bookings_inside_range_grouped_by_wday].group_by { |b| b.start.wday }
 
-          if all_bookings_grouped_by_day.size == 0
-            avail_divided_by_date.each_with_object([]) { |(day, avail), array|
+          if all_bookings_grouped_by_wday.size == 0
+            avail_grouped_by_wday.each_with_object([]) { |(day, avail), array|
               avail.each { |avl|
                 array << {
                   day_id: day,
@@ -108,8 +107,8 @@ module TeoTime
               }
             }
           else
-            all_bookings_grouped_by_day.each_with_object([]) { |(bkg_day_id, bookings), array|
-              avail_divided_by_date.each { |day, avail|
+            all_bookings_grouped_by_wday.each_with_object([]) { |(bkg_day_id, bookings), array|
+              avail_grouped_by_wday.each { |day, avail|
                 if day == bkg_day_id
                   bookings.each { |bkg|
                     avail.each { |avl|
@@ -188,7 +187,7 @@ end
 #   ]
 # }
 
-#step 1 - avail_divided_by_date
+#step 1 - avail_grouped_by_wday
 #  {1=>
 #    [
 #     {:wday=>1,
@@ -199,7 +198,7 @@ end
 #   ]
 # }
 
-#step 2 - bookings_inside_range_grouped_by_day
+#step 2 - bookings_inside_range_grouped_by_wday
 # {1=>
 #    [#<Booking:0x000000010e9da170
 #      id: 17,

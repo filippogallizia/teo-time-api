@@ -175,6 +175,7 @@ Content-Type: application/json
   "start": 300,
   "end": 200,
   "event_id": 5,
+  "day_id": 5,
   "time_zone": "europe/rome",
   "date": "2022/11/26"
 }
