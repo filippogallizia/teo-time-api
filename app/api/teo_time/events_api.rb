@@ -21,7 +21,6 @@ module TeoTime
 
       params do
         requires :trainer_id, type: Integer, allow_blank: false, desc: "trainer_id"
-        requires :weekly_availability_id, type: Integer, allow_blank: false, desc: "weekly_availability_id"
         requires :name, type: String, allow_blank: false, desc: "name"
         requires :increment_amount, type: Integer, allow_blank: false, desc: "increment_amount"
         requires :duration, type: Integer, allow_blank: false, desc: "duration"
@@ -35,7 +34,6 @@ module TeoTime
           {
             trainer_id: params[:trainer_id],
             name: params[:name],
-            weekly_availability_id: params[:weekly_availability_id],
             increment_amount: params[:increment_amount],
             duration: params[:duration],
           }
@@ -68,7 +66,7 @@ module TeoTime
           authenticate!
           authorize! :update, Event
           event = Event.find(params[:id])
-          event.update(weekly_availability_id: params[:weekly_availability_id], name: params[:name], duration: params[:duration], increment_amount: params[:increment_amount], trainer_id: params[:trainer_id])
+          event.update(name: params[:name], duration: params[:duration], increment_amount: params[:increment_amount], trainer_id: params[:trainer_id])
         end
 
         # /events/:id/available_times

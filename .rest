@@ -103,7 +103,6 @@ Content-Type: application/json
 {
   "trainer_id": "1",
   "name": "teo_event",
-  "weekly_availability_id": 1,
   "increment_amount": 15,
   "duration": 30
 }
@@ -143,6 +142,10 @@ Content-Type: application/json
 
 ###
 GET http://localhost:5000/weekly_availabilities/1/hours
+Content-Type: application/json
+
+###
+GET http://localhost:5000/weekly_availabilities/16/hours?date=true
 Content-Type: application/json
 
 // --HOURS--

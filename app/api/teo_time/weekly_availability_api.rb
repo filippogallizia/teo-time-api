@@ -28,6 +28,7 @@ module TeoTime
       params do
         requires :id, type: Integer, allow_blank: false, desc: "id"
         optional :name, type: String, desc: "name"
+        optional :date, type: Boolean, desc: "If true we look for hours with a specific date (override)"
       end
 
       route_param :id do
@@ -61,7 +62,8 @@ module TeoTime
           # authenticate!
           # authorize! :read, WeeklyAvailability
           weekly_avail = WeeklyAvailability.find(params[:id])
-          weekly_avail.hours.map { |h| h.start_end_in_hours }
+          hours = params[:date] ? weekly_avail.hours.select { |h| !h.date.nil? } : weekly_avail.hours
+          hours { |h| h.start_end_in_hours }
         end
       end
     end
