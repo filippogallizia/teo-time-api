@@ -56,15 +56,6 @@ module TeoTime
           WeeklyAvailability.destroy(params[:id])
         end
 
-        # /weekly_availabilities/:id/hours
-        desc 'get single weekly_availability'
-        get 'hours' do
-          # authenticate!
-          # authorize! :read, WeeklyAvailability
-          weekly_avail = WeeklyAvailability.find(params[:id])
-          hours = params[:date] ? weekly_avail.hours.select { |h| !h.date.nil? } : weekly_avail.hours
-          hours { |h| h.start_end_in_hours }
-        end
       end
     end
   end

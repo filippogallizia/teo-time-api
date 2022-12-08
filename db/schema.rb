@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_11_25_155642) do
+ActiveRecord::Schema.define(version: 2022_12_08_091406) do
+
+  create_table "availability_overrides", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+    t.date "start_date"
+    t.date "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "weekly_availability_id"
+    t.index ["weekly_availability_id"], name: "index_availability_overrides_on_weekly_availability_id"
+  end
 
   create_table "bookings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
     t.datetime "start"
@@ -40,12 +49,10 @@ ActiveRecord::Schema.define(version: 2022_11_25_155642) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "weekly_availability_id"
     t.integer "duration"
     t.integer "increment_amount"
     t.bigint "trainer_id"
     t.index ["trainer_id"], name: "index_events_on_trainer_id"
-    t.index ["weekly_availability_id"], name: "index_events_on_weekly_availability_id"
   end
 
   create_table "hours", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
@@ -58,6 +65,8 @@ ActiveRecord::Schema.define(version: 2022_11_25_155642) do
     t.string "time_zone"
     t.bigint "event_id"
     t.date "date"
+    t.bigint "availability_override_id"
+    t.index ["availability_override_id"], name: "index_hours_on_availability_override_id"
     t.index ["day_id"], name: "index_hours_on_day_id"
     t.index ["event_id"], name: "index_hours_on_event_id"
     t.index ["weekly_availability_id"], name: "index_hours_on_weekly_availability_id"
@@ -89,8 +98,10 @@ ActiveRecord::Schema.define(version: 2022_11_25_155642) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "availability_overrides", "weekly_availabilities"
   add_foreign_key "bookings", "users"
   add_foreign_key "bookings", "users", column: "trainer_id"
   add_foreign_key "events", "users", column: "trainer_id"
+  add_foreign_key "hours", "availability_overrides"
   add_foreign_key "users", "roles"
 end

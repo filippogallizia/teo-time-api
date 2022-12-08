@@ -141,11 +141,11 @@ DELETE http://localhost:5000/weekly_availabilities/1
 Content-Type: application/json
 
 ###
-GET http://localhost:5000/weekly_availabilities/1/hours
+GET http://localhost:5000/weekly_availabilities/16
 Content-Type: application/json
 
 ###
-GET http://localhost:5000/weekly_availabilities/16/hours?date=true
+GET http://localhost:5000/weekly_availabilities/16?date=true
 Content-Type: application/json
 
 // --HOURS--
@@ -175,12 +175,14 @@ Content-Type: application/json
 
 {
   "weekly_availability_id": 16,
-  "start": 300,
-  "end": 200,
+  "start": 100,
+  "end": 900,
   "event_id": 5,
   "day_id": 5,
   "time_zone": "europe/rome",
-  "date": "2022/11/26"
+  "date": "2022/12/12",
+  "date_start": "2022/12/12",
+  "date_end": "2022/12/22"
 }
 
 ###
