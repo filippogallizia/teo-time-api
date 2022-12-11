@@ -97,7 +97,7 @@ PUT http://localhost:5000/events/2
 Content-Type: application/json
 
 ###
-POST http://localhost:5000/events/new
+POST http://localhost:5000/events
 Content-Type: application/json
 
 {
@@ -125,11 +125,11 @@ GET http://localhost:5000/weekly_availabilities
 Content-Type: application/json
 
 ###
-GET http://localhost:5000/weekly_availabilities/1
+GET http://localhost:5000/weekly_availabilities/16
 Content-Type: application/json
 
 ###
-POST http://localhost:5000/weekly_availabilities/new
+POST http://localhost:5000/weekly_availabilities
 Content-Type: application/json
 
 {
@@ -161,28 +161,21 @@ Content-Type: application/json
 }
 
 ###
+POST http://localhost:5000/hours
+Content-Type: application/json
+
+{
+  "start": 300,
+  "end": 200,
+  "time_zone": "europe/rome"
+}
+
+###
 PUT http://localhost:5000/users/password
 Content-Type: application/json
 
 {
   "reset_password_token": "bAsrc6pGzbK_xCuXmzCz"
-}
-
-###
-// --HOURS_OVERRIDE--
-POST http://localhost:5000/hours/new
-Content-Type: application/json
-
-{
-  "weekly_availability_id": 16,
-  "start": 100,
-  "end": 900,
-  "event_id": 5,
-  "day_id": 5,
-  "time_zone": "europe/rome",
-  "date": "2022/12/12",
-  "date_start": "2022/12/12",
-  "date_end": "2022/12/22"
 }
 
 ###
@@ -194,6 +187,21 @@ Content-Type: application/json
   "email": "galliziafilippo@gmail.com",
   "idempotency_key": "idempotency_key"
 }
+
+###
+// --AVAILABILITY_OVERRIDE--
+GET http://localhost:5000/availability_overrides
+
+###
+POST http://localhost:5000/availability_overrides
+Content-Type: application/json
+
+{
+  "start_date": "2022/12/12",
+  "end_date": "2022/12/22",
+  "weekly_availability_id": 16
+}
+
 
 
 

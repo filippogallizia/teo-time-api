@@ -101,5 +101,6 @@ module TeoTime
     mount TeoTime::WeeklyAvailabilityApi
     mount TeoTime::HoursApi
     mount TeoTime::StripeChargeApi
+    mount TeoTime::AvailabilityOverrideApi
   end
 end

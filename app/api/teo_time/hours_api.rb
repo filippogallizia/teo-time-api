@@ -5,17 +5,18 @@ module TeoTime
     resource :hours do
       params do
         requires :day_id, type: Integer, allow_blank: false
-        optional :date, type: Date, allow_blank: false
-        optional :event_id, type: Integer, allow_blank: false
         requires :weekly_availability_id, type: Integer, allow_blank: false
         requires :time_zone, type: String, allow_blank: false
         requires :start, type: Integer, allow_blank: false
         requires :end, type: Integer, allow_blank: false
+        optional :event_id, type: Integer
+        optional :date, type: Date, allow_blank: false
+        optional :availability_override_id, type: Integer, allow_blank: false
       end
 
-      # /hours/new
+      # /hours
       desc 'Create a hour'
-      post :new do
+      post do
         # authorize! :update, Event
         Hour.create!(
           {
@@ -26,6 +27,7 @@ module TeoTime
             end: params[:end],
             event_id: params[:event_id],
             date: params[:date],
+            availability_override_id: params[:availability_override_id]
           }
         )
       end

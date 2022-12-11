@@ -22,6 +22,9 @@ module TeoTime
       post :create do
         authenticate!
         authorize! :update, Booking
+
+        # Event has many weeklyAvailabilities, but for now we only use One event with One weeklyAvailability
+        weekly_availability_id = Event.find(params[:event_id]).hours.first.weekly_availability_id
         Booking.create!(
           {
             user_id: params[:user_id],
@@ -29,8 +32,7 @@ module TeoTime
             start: params[:start].to_datetime,
             end: params[:end].to_datetime,
             event_id: params[:event_id],
-            weekly_availability_id: params[:weekly_availability_id],
-            #TODO think if remove this column from booking
+            weekly_availability_id: weekly_availability_id
           }
         )
       end

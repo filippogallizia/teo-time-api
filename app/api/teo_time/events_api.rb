@@ -28,7 +28,7 @@ module TeoTime
 
       # /events/create
       desc 'Create a event'
-      post :new do
+      post do
         authorize! :update, Event
         Event.create!(
           {

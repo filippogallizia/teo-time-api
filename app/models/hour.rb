@@ -1,5 +1,6 @@
 class Hour < ApplicationRecord
   belongs_to :weekly_availability, optional: true
+  belongs_to :availability_override, optional: true
   belongs_to :day, optional: true
   belongs_to :event, optional: true
   belongs_to :trainer, :class_name => 'User', :foreign_key => "trainer_id", optional: true

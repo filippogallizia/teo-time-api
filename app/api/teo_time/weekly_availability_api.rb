@@ -14,9 +14,9 @@ module TeoTime
         requires :name, type: String, allow_blank: false, desc: "name"
       end
 
-      # /weekly_availabilities/new
+      # /weekly_availabilities
       desc 'Create a weekly_availability'
-      post :new do
+      post do
         # authorize! :update, WeeklyAvailability
         WeeklyAvailability.create!(
           {
@@ -37,14 +37,14 @@ module TeoTime
         get do
           # authenticate!
           # authorize! :read, WeeklyAvailability
-          WeeklyAvailability.find(params[:id]).as_json(include: :hours)
+          WeeklyAvailability.find(params[:id]).as_json(include: [{ :availability_overrides => { :include => :hours } }, :hours])
         end
 
         put do
           # authenticate!
           # authorize! :read, WeeklyAvailability
           weekly_availability = WeeklyAvailability.find(params[:id])
-          weekly_availability.update(name: params[:name])
+          weekly_availability.update!(name: params[:name])
         end
 
         # /weekly_availabilities/:id
@@ -52,7 +52,6 @@ module TeoTime
         delete do
           # authenticate!
           # authorize! :update, WeeklyAvailability
-          # binding.pry
           WeeklyAvailability.destroy(params[:id])
         end
 

@@ -36,7 +36,7 @@ class Booking < ApplicationRecord
   def validate_booking_fit_slot
     day_id = self.start.to_datetime.wday
     event = Event.find(self.event_id)
-    hours = Hour.where(weekly_availability: event.weekly_availability_id, day_id: day_id)
+    hours = event.hours.where(day_id: day_id)
     slots = hours.each_with_object([]) do |hour, arr|
       arr << hour.add_time_zone_to_hour(self.start.to_datetime)
     end.map { |v| create_slot([], event.increment_amount, event.duration, { start: v[:start], end: v[:end] }) }.flatten
