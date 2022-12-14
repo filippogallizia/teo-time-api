@@ -17,15 +17,15 @@ module TeoTime
         end
       end
 
-      # /bookings/create
+      # /bookings
       desc 'Create a booking'
-      post :create do
+      post do
         authenticate!
         authorize! :update, Booking
 
         # Event has many weeklyAvailabilities, but for now we only use One event with One weeklyAvailability
         weekly_availability_id = Event.find(params[:event_id]).hours.first.weekly_availability_id
-        Booking.create!(
+        booking = Booking.create!(
           {
             user_id: params[:user_id],
             trainer_id: params[:trainer_id],
@@ -35,6 +35,9 @@ module TeoTime
             weekly_availability_id: weekly_availability_id
           }
         )
+        if booking.save
+          BookingMailer.confirm_booking('galliziafilippo@gmail.com').deliver_now
+        end
       end
 
       params do

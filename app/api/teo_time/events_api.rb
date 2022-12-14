@@ -115,14 +115,14 @@ module TeoTime
                         if index
                           array[index] = {
                             **array[index],
-                            bookings: array[index][:bookings] << { start: bkg[:start], end: bkg[:end] },
+                            bookings: array[index][:bookings] << bkg,
                             slots: array[index][:slots].select { |slot|
                               overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
                           }
                         else
                           array << {
                             day_id: day,
-                            bookings: [{ start: bkg[:start], end: bkg[:end] }],
+                            bookings: [bkg],
                             date: avl[:date],
                             slots: avl[:slots].select { |slot|
                               overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
