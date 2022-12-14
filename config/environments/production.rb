@@ -79,6 +79,7 @@ Rails.application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
+  # Mailer
   config.action_mailer.perform_caching = false
   config.action_mailer.default_url_options = {
     :host => "osteotherapy.com"
