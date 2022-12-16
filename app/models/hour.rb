@@ -11,7 +11,7 @@ class Hour < ApplicationRecord
 
   # TODO this fn always need to have a date
   def add_time_zone_to_hour(date)
-    { start: add_minutes_to_specific_date(date, start, self.time_zone), end: add_minutes_to_specific_date(date, self.end, self.time_zone) }
+    { start: add_minutes_to_specific_date(date, self.start, self.time_zone), end: add_minutes_to_specific_date(date, self.end, self.time_zone) }
   end
 
   def today_date_plus_minutes (minutes, time_zone)

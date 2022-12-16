@@ -72,85 +72,11 @@ module TeoTime
         # /events/:id/available_times
         desc 'Get available times'
         get 'available_times' do
-          rangeStart = params[:start].to_datetime
-          rangeEnd = params[:end].to_datetime
+          range_start = params[:start].to_datetime
+          range_end = params[:end].to_datetime
           event = Event.find(params[:id])
-          avail_grouped_by_wday = create_avail_divided_by_date(rangeStart, rangeEnd, event)
-          # recurring bookings
-          recurrent_bookings = event.bookings.where({ recurrent: true })
-          recurring_bookings_with_updated_date = avail_grouped_by_wday.each_with_object([]) do |(day, range), array|
-            recurrent_bookings.each do |book|
-              if day === book[:start].wday
-                range.each do |r|
-                  array << book.give_date_to_recurrent_bookings(r, book)
-                end
-              end
-            end
-            array
-          end
-          # normal bookings
-          bookings_inside_range_grouped_by_wday = event.bookings.where({ recurrent: nil }).inside_range({ start: rangeStart, end: rangeEnd })
-
-          all_bookings_grouped_by_wday = [*recurring_bookings_with_updated_date, *bookings_inside_range_grouped_by_wday].group_by { |b| b.start.wday }
-
-          if all_bookings_grouped_by_wday.size == 0
-            avail_grouped_by_wday.each_with_object([]) { |(day, avail), array|
-              avail.each { |avl|
-                array << {
-                  day_id: day,
-                  bookings: [],
-                  date: avl[:date],
-                  slots: avl[:slots]
-                }
-              }
-            }
-          else
-            all_bookings_grouped_by_wday.each_with_object([]) { |(bkg_day_id, bookings), array|
-              avail_grouped_by_wday.each { |day, avail|
-                if day == bkg_day_id
-                  bookings.each { |bkg|
-                    avail.each { |avl|
-                      if are_dates_equal?(avl[:date], bkg[:start])
-                        index = array.index { |ar| ar[:date] == avl[:date] }
-                        if index
-                          array[index] = {
-                            **array[index],
-                            bookings: array[index][:bookings] << bkg,
-                            slots: array[index][:slots].select { |slot|
-                              overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
-                          }
-                        else
-                          array << {
-                            day_id: day,
-                            bookings: [bkg],
-                            date: avl[:date],
-                            slots: avl[:slots].select { |slot|
-                              overlaps?({ start: bkg[:start], end: bkg[:end] }, { start: slot[:start], end: slot[:end] }) == false }
-                          }
-                        end
-                      else
-                        array << {
-                          day_id: day,
-                          bookings: [],
-                          date: avl[:date],
-                          slots: avl[:slots]
-                        }
-                      end
-                    }
-                  }
-                else
-                  avail.each { |avl|
-                    array << {
-                      day_id: day,
-                      bookings: [],
-                      date: avl[:date],
-                      slots: avl[:slots]
-                    }
-                  }
-                end
-              }
-            }
-          end
+          avail_on_the_fly = create_availability_on_the_fly(range_start, range_end, event)
+          avail_on_the_fly.each { |av| av.compare_slots_with_bookings }
         end
 
         # /events/:id/bookings

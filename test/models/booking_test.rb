@@ -16,7 +16,7 @@ class BookingTest < ActionDispatch::IntegrationTest
     @trainer = create(:user, email: "trainer@gmail.com", role: @role_trainer)
     @user = create(:user, email: "user@gmail.com", role: @role)
     @weekly_availability = create(:weekly_availability)
-    @event = create(:event, trainer: @user, weekly_availability: @weekly_availability, increment_amount: @increment, duration: @duration)
+    @event = create(:event, trainer: @user, increment_amount: @increment, duration: @duration)
   end
 
   # test "if there are no bookings, first_slot_start = day_start and last_slot_end = day_end" do

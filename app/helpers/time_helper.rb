@@ -34,12 +34,33 @@ module TimeHelper
     range_divided_by_days.group_by { |hash| hash[:date].wday }
   end
 
+  def create_availability_on_the_fly(range_start, range_end, event)
+    # slots =
+    days = divide_range_in_days(range_start, range_end)
+    days.map do |day|
+      AvailabilityOnTheFly.new({ day_id: day.wday, date: day, range: { start: range_start, end: range_end },
+                                 bookings: [],
+                                 event: event,
+                                 recurrent_bookings: [],
+                                 slots: event.hours_with_date_or_wday(day, day.wday).to_a.map { |hour|
+                                   # TODO CHANGE THIS METHOD NAME BELOW add_time_zone_to_hour
+                                   hour_start = hour.add_time_zone_to_hour(day)[:start]
+                                   hour_end = hour.add_time_zone_to_hour(day)[:end]
+                                   create_slot([], event.increment_amount, event.duration, { start: hour_start, end: hour_end })
+                                 }.flatten })
+    end
+  end
+
+  def divide_range_in_days(range_start, range_end)
+    range_start.step(range_end).to_a
+  end
+
   def create_avail_divided_by_date (rangeStart, rangeEnd, event)
+    # here we just add the slots
     group_range_by_wday({ start: rangeStart, end: rangeEnd }).each { |day_id, array_wday|
       array_wday.each { |day_hash|
         # here we modify
         day_hash[:slots] = event.hours_with_date_or_wday(day_hash[:date], day_id).to_a.map { |hour|
-          # day_hash[:slots] = event.hours.where({ day_id: key }).to_a.map { |hour|
           hour_start = hour.add_time_zone_to_hour(day_hash[:date])[:start]
           hour_end = hour.add_time_zone_to_hour(day_hash[:date])[:end]
           create_slot([], event.increment_amount, event.duration, { start: hour_start, end: hour_end })
