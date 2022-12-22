@@ -95,14 +95,14 @@ class BookingTest < ActionDispatch::IntegrationTest
     create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
     create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
 
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T07:00:00.000Z", end: "2022-11-18T08:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T08:30:00.000Z", end: "2022-11-18T09:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T10:00:00.000Z", end: "2022-11-18T11:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T12:00:00.000Z", end: "2022-11-18T13:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T13:30:00.000Z", end: "2022-11-18T14:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T15:00:00.000Z", end: "2022-11-18T16:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T16:30:00.000Z", end: "2022-11-18T17:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
-    @booking = FactoryBot.create(:booking, start: "2022-11-18T18:00:00.000Z", end: "2022-11-18T19:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T07:00:00.000Z", end: "2022-11-18T08:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer, recurrent: nil)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T08:30:00.000Z", end: "2022-11-18T09:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer, recurrent: nil)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T10:00:00.000Z", end: "2022-11-18T11:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer, recurrent: nil)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T12:00:00.000Z", end: "2022-11-18T13:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer, recurrent: nil)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T13:30:00.000Z", end: "2022-11-18T14:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer, recurrent: nil)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T15:00:00.000Z", end: "2022-11-18T16:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer, recurrent: nil)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T16:30:00.000Z", end: "2022-11-18T17:30:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer, recurrent: nil)
+    @booking = FactoryBot.create(:booking, start: "2022-11-18T18:00:00.000Z", end: "2022-11-18T19:00:00.000Z", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer, recurrent: nil)
 
     get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
 
@@ -150,6 +150,24 @@ class BookingTest < ActionDispatch::IntegrationTest
     res = JSON.parse(response.body)
     day_of_work = res.select { |d| d['day_id'] == day.id }[0]
     slot_one_start = day_of_work['slots'].first["start"].to_datetime
-
   end
+
+  # test "test recurring bookings" do
+  #   day = create(:day, name: 'wednesday', id: 3)
+  #   x = Date.today.next_week(:wednesday)
+  #   second_thur = first_thurds.next_week(:wednesday)
+  #
+  #   create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Samara')
+  #   create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Samara')
+  #
+  #   Booking.create({ start: "2022-11-18T09:30:00.000+04:00", end: "2022-11-18T10:30:00.000+04:00", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer, recurrent: true })
+  #
+  #   get "http://localhost:3000/events/#{@event.id}/available_times?start=#{first_thur.at_beginning_of_day}&end=#{first_thur.at_end_of_day}"
+  #   # get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
+  #
+  #   res = JSON.parse(response.body)
+  #   binding.pry
+  #   day_of_work = res.select { |d| d['day_id'] == day.id }[0]
+  #   slot_one_start = day_of_work['slots'].first["start"].to_datetime
+  # end
 end

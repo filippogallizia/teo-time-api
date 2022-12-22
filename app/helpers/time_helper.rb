@@ -20,53 +20,8 @@ module TimeHelper
     date_one_datetime.change(hour: date_two_datetime.hour, minute: date_two_datetime.minute)
   end
 
-  def group_range_by_wday(range)
-    start_range = range[:start].to_datetime
-    end_range = range[:end].to_datetime
-    range_divided_by_days = (start_range..end_range).each_with_object([]) do |day, array|
-      start_date = day.day == start_range.day ? start_range : day.at_beginning_of_day
-      end_date = day.day == end_range.day ? end_range : day.at_end_of_day
-      array << { wday: day.wday,
-                 date: day,
-                 range: { start: start_date, end: end_date }
-      }
-    end
-    range_divided_by_days.group_by { |hash| hash[:date].wday }
-  end
-
-  def create_availability_on_the_fly(range_start, range_end, event)
-    # slots =
-    days = divide_range_in_days(range_start, range_end)
-    days.map do |day|
-      AvailabilityOnTheFly.new({ day_id: day.wday, date: day, range: { start: range_start, end: range_end },
-                                 bookings: [],
-                                 event: event,
-                                 recurrent_bookings: [],
-                                 slots: event.hours_with_date_or_wday(day, day.wday).to_a.map { |hour|
-                                   # TODO CHANGE THIS METHOD NAME BELOW add_time_zone_to_hour
-                                   hour_start = hour.add_time_zone_to_hour(day)[:start]
-                                   hour_end = hour.add_time_zone_to_hour(day)[:end]
-                                   create_slot([], event.increment_amount, event.duration, { start: hour_start, end: hour_end })
-                                 }.flatten })
-    end
-  end
-
   def divide_range_in_days(range_start, range_end)
     range_start.step(range_end).to_a
-  end
-
-  def create_avail_divided_by_date (rangeStart, rangeEnd, event)
-    # here we just add the slots
-    group_range_by_wday({ start: rangeStart, end: rangeEnd }).each { |day_id, array_wday|
-      array_wday.each { |day_hash|
-        # here we modify
-        day_hash[:slots] = event.hours_with_date_or_wday(day_hash[:date], day_id).to_a.map { |hour|
-          hour_start = hour.add_time_zone_to_hour(day_hash[:date])[:start]
-          hour_end = hour.add_time_zone_to_hour(day_hash[:date])[:end]
-          create_slot([], event.increment_amount, event.duration, { start: hour_start, end: hour_end })
-        }.flatten
-      }
-    }
   end
 
   def range_one_fully_within_range_two? (range_one, range_two)
@@ -94,18 +49,4 @@ module TimeHelper
   end
 end
 
-# WORKING VERSION
-# def create_avail_divided_by_date (rangeStart, rangeEnd, event)
-#   range_grouped_by_wday = group_range_by_wday({ start: rangeStart, end: rangeEnd })
-#   range_grouped_by_wday.each { |key, value|
-#     value.each { |hash|
-#       # hash[:slots] = event.hours_with_date_or_wday(value[:date], key).to_a.map { |hour|
-#       hash[:slots] = event.hours.where({ day_id: key }).to_a.map { |hour|
-#         hour_start = hour.add_time_zone_to_hour(hash[:date])[:start]
-#         hour_end = hour.add_time_zone_to_hour(hash[:date])[:end]
-#         create_slot([], event.increment_amount, event.duration, { start: hour_start, end: hour_end })
-#       }.flatten
-#     }
-#   }
-# end
 

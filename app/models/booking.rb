@@ -34,13 +34,20 @@ class Booking < ApplicationRecord
   end
 
   def validate_booking_fit_slot
-    day_id = self.start.to_datetime.wday
     event = Event.find(self.event_id)
-    hours = event.hours.where(day_id: day_id)
-    slots = hours.each_with_object([]) do |hour, arr|
-      arr << hour.add_time_zone_to_hour(self.start.to_datetime)
-    end.map { |v| create_slot([], event.increment_amount, event.duration, { start: v[:start], end: v[:end] }) }.flatten
-    match = slots.find { |slot| slot[:start] == self.start && slot[:end] == self.end }
+    availability_on_the_fly = AvailabilityOnTheFly.new(
+      {
+        day_id: self.start.wday,
+        date: self.start.to_datetime,
+        range: { start: self.start.to_datetime.at_beginning_of_day, end: self.end.to_datetime.at_end_of_day },
+        event: event,
+        bookings: [],
+        recurrent_bookings: [],
+        slots: []
+      }
+    )
+    availability_on_the_fly.set_slots
+    match = availability_on_the_fly.slots.find { |slot| slot[:start] == self.start && slot[:end] == self.end }
     self.errors.add("Slot missing", "There is not a slot for this booking range") if !match
   end
 
@@ -49,6 +56,12 @@ class Booking < ApplicationRecord
     event = calendar.event('trainining', 'Milan', 'osteo train', self.start, self.end, self.start.to_datetime.zone)
     res = calendar.insert_event(event)
     self.calendarEventId = res.id
+  end
+
+  def change_date_to_start_end(date)
+    self.start = date.to_datetime.change(hour: self.start.to_datetime.hour, minute: self.start.to_datetime.minute)
+    self.end = date.to_datetime.change(hour: self.end.to_datetime.hour, minute: self.end.to_datetime.minute)
+    self
   end
 
   def delete_from_calendar

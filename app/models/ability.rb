@@ -14,7 +14,8 @@ class Ability
     if current_user&.is_trainer
       can :update, Booking, trainer_id: current_user.id
       can :update, Event, trainer_id: current_user.id
-
+      can :update, WeeklyAvailability, trainer_id: current_user.id
+      can :update, AvailabilityOverride, trainer_id: current_user.id
     end
 
     if current_user&.is_admin

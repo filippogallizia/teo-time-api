@@ -11,12 +11,7 @@ module TeoTime
       end
       get do
         authorize! :read, Event
-        if params["weekly_availability"]
-          Event.includes(:weekly_availability).filter_by_weekly_availability(params["weekly_availability"])
-        else
-          Event.includes(:weekly_availability).as_json
-        end
-
+        Event.all
       end
 
       params do
@@ -75,8 +70,23 @@ module TeoTime
           range_start = params[:start].to_datetime
           range_end = params[:end].to_datetime
           event = Event.find(params[:id])
-          avail_on_the_fly = create_availability_on_the_fly(range_start, range_end, event)
-          avail_on_the_fly.each { |av| av.compare_slots_with_bookings }
+          days = divide_range_in_days(range_start, range_end)
+          days.map do |day|
+            availability_on_the_fly = AvailabilityOnTheFly.new(
+              {
+                day_id: day.wday,
+                date: day,
+                range: { start: range_start, end: range_end },
+                event: event,
+                bookings: [],
+                recurrent_bookings: [],
+                slots: []
+              }
+            )
+            availability_on_the_fly.set_slots
+            availability_on_the_fly.compare_slots_with_bookings
+            availability_on_the_fly
+          end
         end
 
         # /events/:id/bookings

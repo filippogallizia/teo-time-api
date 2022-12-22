@@ -29,8 +29,8 @@ class Hour < ApplicationRecord
     { **self.as_json, start: min_to_h(self.start), end: min_to_h(self.end) }
   end
 
-  def add_minutes_to_specific_date(date, minutes, time_zone)
+  def add_minutes_to_specific_date(date, time, time_zone)
     date_parsed = set_time_zone_to_date(date.midnight, time_zone)
-    date_parsed.midnight + minutes.minutes
+    date_parsed.midnight + time.minutes
   end
 end

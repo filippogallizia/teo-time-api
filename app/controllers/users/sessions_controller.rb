@@ -14,8 +14,10 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def list
-    if params['only_trainers'] == 'true'
-      respond_with User.where(role_id: 2)
+    # authenticate!
+    raise NotAuthorized if current_user.is_client
+    if current_user.is_trainer
+      respond_with Booking.where(trainer_id: current_user.id).map { |b| b.user }
     else
       respond_with User.all
     end

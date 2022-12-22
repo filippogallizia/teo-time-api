@@ -9,6 +9,12 @@ module TeoTime
       end
     end
 
+    class NotAuthorized < StandardError
+      def initialize(msg = nil)
+        super("You are not authorized")
+      end
+    end
+
     class MethodNotFound < StandardError
     end
 

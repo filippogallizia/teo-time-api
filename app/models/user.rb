@@ -24,6 +24,6 @@ class User < ApplicationRecord
   end
 
   def is_client
-    true if !is_trainer && !is_admin
+    self.role.id == 1
   end
 end
