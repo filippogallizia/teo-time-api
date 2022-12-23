@@ -4,8 +4,7 @@ class WeeklyAvailability < ApplicationRecord
   has_many :availability_overrides, dependent: :destroy
   has_many :days, through: :hours
   has_many :events, through: :hours
-  include TimeHelper
-
+  validates_presence_of :name, :address
 end
 
 

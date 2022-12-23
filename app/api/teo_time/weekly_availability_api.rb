@@ -1,7 +1,6 @@
 module TeoTime
   class WeeklyAvailabilityApi < Grape::API
     resource :weekly_availabilities do
-
       # /weekly_availabilities
       desc 'List all weekly_availabilities'
       get do
@@ -11,7 +10,7 @@ module TeoTime
       end
 
       params do
-        requires :name, type: String, allow_blank: false, desc: "name"
+        requires :address, type: Integer, allow_blank: true, desc: "event_id"
       end
 
       # /weekly_availabilities
@@ -21,6 +20,7 @@ module TeoTime
         WeeklyAvailability.create!(
           {
             name: params[:name],
+            address: params[:address],
           }
         )
       end
@@ -44,7 +44,7 @@ module TeoTime
           # authenticate!
           # authorize! :read, WeeklyAvailability
           weekly_availability = WeeklyAvailability.find(params[:id])
-          weekly_availability.update!(name: params[:name])
+          weekly_availability.update!(name: params[:name], address: params[:address])
         end
 
         # /weekly_availabilities/:id

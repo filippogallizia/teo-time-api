@@ -16,14 +16,14 @@ class User < ApplicationRecord
   end
 
   def is_trainer
-    self.role.id == 2
+    self.role.trainer_role
   end
 
   def is_admin
-    self.role.id == 3
+    self.role.admin_role
   end
 
   def is_client
-    self.role.id == 1
+    self.role.client_role
   end
 end

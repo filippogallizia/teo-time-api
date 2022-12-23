@@ -37,7 +37,6 @@ class BookingTest < ActionDispatch::IntegrationTest
   #   assert_equal day_of_work['bookings'].size, 0
   #   # assert there are 8 element in array, it means all of them
   #   assert_equal day_of_work['slots'].size, 8
-  #   binding.pry
   #   # assert working start time
   #   assert_equal slot_one_start, working_start
   #   # assert working end time

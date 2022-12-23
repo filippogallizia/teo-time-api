@@ -28,8 +28,8 @@ class Booking < ApplicationRecord
   end
 
   def validate_overlapping
-    #TODO filter for event
-    all_bookings = Booking.all
+    #TODO add validation for recurrent bookings!!!
+    all_bookings = Booking.where({ event_id: event.id, weekly_availability_id: weekly_availability_id })
     all_bookings.each { |book| overlaps({ start: self.start, end: self.end }, { start: book.start, end: book.end }) } if all_bookings.length
   end
 
@@ -38,6 +38,7 @@ class Booking < ApplicationRecord
     availability_on_the_fly = AvailabilityOnTheFly.new(
       {
         day_id: self.start.wday,
+        weekly_availability_id: self.weekly_availability_id,
         date: self.start.to_datetime,
         range: { start: self.start.to_datetime.at_beginning_of_day, end: self.end.to_datetime.at_end_of_day },
         event: event,

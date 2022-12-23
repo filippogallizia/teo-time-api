@@ -4,14 +4,10 @@ class Event < ApplicationRecord
   has_many :bookings
   has_many :hours
   has_many :weekly_availability, through: :hours
-  validates_presence_of :name, :trainer_id, :duration, :increment_amount
+  validates_presence_of :name, :trainer_id, :duration, :increment_amount, :price
 
-  def create_avail_slot
-    id = read_attribute(self.id)
-  end
-
-  def hours_with_date_or_wday (date, day_id)
-    hours_with_availabilities_override = self.hours.where.not(availability_override_id: nil)
+  def hours_with_date_or_wday (date, day_id, weekly_availability_id)
+    hours_with_availabilities_override = self.hours.where.not(availability_override_id: nil).where(weekly_availability_id: weekly_availability_id)
     if hours_with_availabilities_override && hours_with_availabilities_override.size
       hours_with_availabilities_override_overlapping = hours_with_availabilities_override.select do |h|
         availability_override = AvailabilityOverride.find(h.availability_override_id)
@@ -21,6 +17,10 @@ class Event < ApplicationRecord
         overlaps?(range_one, range_two)
       end
     end
-    hours_with_availabilities_override_overlapping&.length > 0 ? hours_with_availabilities_override_overlapping : self.hours.where(day_id: day_id, availability_override_id: nil)
+    hours_with_availabilities_override_overlapping&.length > 0 ? hours_with_availabilities_override_overlapping : self.hours.where(day_id: day_id, availability_override_id: nil, weekly_availability_id: weekly_availability_id)
+  end
+
+  def weekly_availabilities
+    self.hours.map { |h| h.weekly_availability }.uniq
   end
 end

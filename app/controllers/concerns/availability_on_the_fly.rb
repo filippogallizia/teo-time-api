@@ -1,6 +1,6 @@
 class AvailabilityOnTheFly
   include TimeHelper
-  attr_accessor :day_id, :range, :bookings, :date, :slots, :bookings, :recurrent_bookings, :event
+  attr_accessor :day_id, :range, :bookings, :date, :slots, :bookings, :recurrent_bookings, :event, :weekly_availability_id
 
   def initialize(args)
     args.each do |k, v|
@@ -21,7 +21,7 @@ class AvailabilityOnTheFly
 
   def set_slots
     return unless event.present? && date
-    self.slots = event.hours_with_date_or_wday(date, date.wday).to_a.map { |hour|
+    self.slots = event.hours_with_date_or_wday(date, date.wday, weekly_availability_id).to_a.map { |hour|
       hour_start = hour.add_time_zone_to_hour(date)[:start]
       hour_end = hour.add_time_zone_to_hour(date)[:end]
       create_slot([], event.increment_amount, event.duration, { start: hour_start, end: hour_end })

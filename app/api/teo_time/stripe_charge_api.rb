@@ -13,22 +13,15 @@ module TeoTime
       end
 
       post :create_payment_intent do
-        @amount = 500
+        authenticate!
+        amount = 500
         begin
-          customer = Stripe::Customer.list({ email: params[:email] })
-          id = ''
-
-          if customer.present? && customer.data.length > 0
-            id = customer.data[0].id
-          else
-            id = Stripe::Customer.create({ email: params[:email] }, { idempotency_key: params[:idempotency_key] }).id
-          end
-
+          customer = Stripe::Customer.list({ email: current_user.email })&.first || Stripe::Customer.create({ email: current_user.email, name: current_user.email }, { idempotency_key: params[:idempotency_key] })
           payment_intent = Stripe::PaymentIntent.create(
             {
-              setup_future_usage: 'off_session',
-              customer: id,
-              amount: 50,
+              setup_future_usage: 'on_session',
+              customer: customer.id,
+              amount: @amount,
               currency: 'eur',
               automatic_payment_methods: {
                 enabled: true,

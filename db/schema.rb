@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_08_091406) do
+ActiveRecord::Schema.define(version: 2022_12_23_150155) do
 
   create_table "availability_overrides", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
     t.date "start_date"
@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(version: 2022_12_08_091406) do
     t.integer "duration"
     t.integer "increment_amount"
     t.bigint "trainer_id"
+    t.integer "price"
     t.index ["trainer_id"], name: "index_events_on_trainer_id"
   end
 
@@ -96,6 +97,7 @@ ActiveRecord::Schema.define(version: 2022_12_08_091406) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "address"
   end
 
   add_foreign_key "availability_overrides", "weekly_availabilities"
