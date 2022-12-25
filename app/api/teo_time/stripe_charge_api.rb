@@ -21,7 +21,7 @@ module TeoTime
             {
               setup_future_usage: 'on_session',
               customer: customer.id,
-              amount: @amount,
+              amount: amount,
               currency: 'eur',
               automatic_payment_methods: {
                 enabled: true,

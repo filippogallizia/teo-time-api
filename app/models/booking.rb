@@ -12,6 +12,8 @@ class Booking < ApplicationRecord
 
   include TimeHelper
 
+  scope :future_bookings, -> { where("start > ?", Time.now) }
+
   def retrieve_week_day
     self.read_attribute(:start).wday
   end
@@ -29,8 +31,9 @@ class Booking < ApplicationRecord
 
   def validate_overlapping
     #TODO add validation for recurrent bookings!!!
-    all_bookings = Booking.where({ event_id: event.id, weekly_availability_id: weekly_availability_id })
-    all_bookings.each { |book| overlaps({ start: self.start, end: self.end }, { start: book.start, end: book.end }) } if all_bookings.length
+    all_bookings = Booking.where({ event_id: event.id, weekly_availability_id: weekly_availability_id, start: self.start.all_day })
+    overlaps = all_bookings.find { |book| overlaps({ start: self.start, end: self.end }, { start: book.start, end: book.end }) }
+    overlaps.present?
   end
 
   def validate_booking_fit_slot
@@ -78,5 +81,14 @@ class Booking < ApplicationRecord
   scope :inside_range, ->(range) {
     where.not(Arel.sql("start > '#{range[:end]}' OR end < '#{range[:start]}'"))
   }
+
+  def custom_json
+    {
+      **self.attributes,
+      user: self.user,
+      trainer: self.trainer,
+      event: self.event
+    }
+  end
 
 end

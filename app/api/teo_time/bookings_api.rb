@@ -6,13 +6,7 @@ module TeoTime
       desc 'List all bookings'
       get do
         # TODO is there a better way to do this?
-        Booking.all.each_with_object([]) do |booking, array|
-          hash = { **booking.attributes }
-          hash['user'] = booking.user
-          hash['trainer'] = booking.trainer
-          hash['event'] = booking.event
-          array << hash
-        end
+        Booking.future_bookings.map { |booking| booking.custom_json }
       end
 
       # POST /bookings

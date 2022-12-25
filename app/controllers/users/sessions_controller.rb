@@ -13,6 +13,10 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
+  def bookings
+    respond_with Booking.future_bookings.where(user_id: current_user.id).map { |booking| booking.custom_json }
+  end
+
   def list
     # authenticate!
     raise NotAuthorized if current_user.is_client

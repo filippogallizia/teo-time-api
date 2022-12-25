@@ -10,7 +10,7 @@ module TeoTime
       end
 
       params do
-        requires :address, type: Integer, allow_blank: true, desc: "event_id"
+        requires :address, type: String, allow_blank: true, desc: "event_id"
       end
 
       # /weekly_availabilities

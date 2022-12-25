@@ -70,7 +70,7 @@ module TeoTime
           authenticate!
           authorize! :update, Event
           event = Event.find(params[:id])
-          event.update(name: params[:name], duration: params[:duration], increment_amount: params[:increment_amount], trainer_id: params[:trainer_id], price: params[:price])
+          event.update!(name: params[:name], duration: params[:duration], increment_amount: params[:increment_amount], trainer_id: params[:trainer_id], price: params[:price])
         end
 
         # /events/:id/weekly_availability/:weekly_availability_id/available_times
