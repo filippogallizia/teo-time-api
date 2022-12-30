@@ -11,13 +11,9 @@ module TeoTime
       get do
         authorize! :read, Event
         if params[:include_weekly_availabilities].present?
-          Event.all.each_with_object([]) do |event, array|
-            hash = { **event.attributes }
-            hash['weekly_availabilities'] = event.weekly_availabilities
-            array << hash
-          end
+          Event.all.map { |event| event.custom_json({ weekly_availabilities: true }) }
         else
-          Event.all
+          Event.all.map { |event| event.custom_json }
         end
       end
 

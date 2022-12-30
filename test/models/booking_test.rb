@@ -20,18 +20,18 @@ class BookingTest < ActionDispatch::IntegrationTest
   end
 
   # test "if there are no bookings, first_slot_start = day_start and last_slot_end = day_end" do
-  #   required_range = { start: '2022-11-18T06:00:00.000Z', end: '2022-11-18T21:00:00.000Z' }
+  #   time_range = { start: '2022-11-18T06:00:00.000Z', end: '2022-11-18T21:00:00.000Z' }
   #   day = create(:day, name: 'wednesday', id: 5)
   #   weekly_availability = create(:weekly_availability)
   #   event = create(:event, user: @user, weekly_availability: weekly_availability)
   #   create(:hour, start: 480, end: 720, weekly_availability: weekly_availability, day: day, time_zone: 'Europe/Rome')
   #   create(:hour, start: 780, end: 1200, weekly_availability: weekly_availability, day: day, time_zone: 'Europe/Rome')
-  #   get "http://localhost:3000/events/#{event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
+  #   get "http://localhost:3000/events/#{event.id}/available_times?start=#{time_range[:start]}&end=#{time_range[:end]}"
   #   res = response.body
   #   day_of_work = JSON.parse(res).select { |d| d['day_id'] == day.id }[0]
-  #   working_start = required_range[:start].to_datetime.at_beginning_of_day + 480.minutes
+  #   working_start = time_range[:start].to_datetime.at_beginning_of_day + 480.minutes
   #   slot_one_start = day_of_work['slots'].first["start"].to_datetime
-  #   working_end = required_range[:start].to_datetime.at_beginning_of_day + 1200.minutes
+  #   working_end = time_range[:start].to_datetime.at_beginning_of_day + 1200.minutes
   #   last_slot_end = day_of_work['slots'].last["end"].to_datetime
   #   # assert there are no bookings
   #   assert_equal day_of_work['bookings'].size, 0
@@ -110,17 +110,17 @@ class BookingTest < ActionDispatch::IntegrationTest
   end
 
   test "test override weekly_availability" do
-    required_range = { start: week_days_with_datetime(:monday), end: week_days_with_datetime(:sunday) }
+    time_range = { start: week_days_with_datetime(:monday), end: week_days_with_datetime(:sunday) }
     day = create(:day, id: 5)
     random_wednesday = '2022/11/25'
-    random_wednesday_required_range_start = '2022-11-25T00:00:00.000Z'
-    random_wednesday_required_range_end = '2022-11-25T23:00:00.000Z'
+    random_wednesday_start = '2022-11-25T00:00:00.000Z'
+    random_wednesday_end = '2022-11-25T23:00:00.000Z'
 
     create(:hour, start: 8 * 60, end: 9 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Europe/Rome')
     create(:hour, start: 10 * 60, end: 11 * 60, weekly_availability: @weekly_availability, event: @event, date: random_wednesday, day_id: 5, time_zone: 'Europe/Rome')
-    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
+    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{time_range[:start]}&end=#{time_range[:end]}"
     res1 = JSON.parse(response.body)
-    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{random_wednesday_required_range_start}&end=#{random_wednesday_required_range_end}"
+    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{random_wednesday_start}&end=#{random_wednesday_end}"
     res2 = JSON.parse(response.body)
 
     recurrent_wednesday_first_slot = res1.find { |day| day["day_id"] == 5 }['slots'][0]
@@ -151,22 +151,22 @@ class BookingTest < ActionDispatch::IntegrationTest
     slot_one_start = day_of_work['slots'].first["start"].to_datetime
   end
 
-  # test "test recurring bookings" do
-  #   day = create(:day, name: 'wednesday', id: 3)
-  #   x = Date.today.next_week(:wednesday)
-  #   second_thur = first_thurds.next_week(:wednesday)
-  #
-  #   create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Samara')
-  #   create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Samara')
-  #
-  #   Booking.create({ start: "2022-11-18T09:30:00.000+04:00", end: "2022-11-18T10:30:00.000+04:00", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer, recurrent: true })
-  #
-  #   get "http://localhost:3000/events/#{@event.id}/available_times?start=#{first_thur.at_beginning_of_day}&end=#{first_thur.at_end_of_day}"
-  #   # get "http://localhost:3000/events/#{@event.id}/available_times?start=#{required_range[:start]}&end=#{required_range[:end]}"
-  #
-  #   res = JSON.parse(response.body)
-  #   binding.pry
-  #   day_of_work = res.select { |d| d['day_id'] == day.id }[0]
-  #   slot_one_start = day_of_work['slots'].first["start"].to_datetime
-  # end
+  test "test recurring bookings" do
+    day = create(:day, name: 'wednesday', id: 3)
+    x = Date.today.next_week(:wednesday)
+    second_thur = first_thurds.next_week(:wednesday)
+
+    create(:hour, start: 8 * 60, end: 12 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Samara')
+    create(:hour, start: 13 * 60, end: 20 * 60, weekly_availability: @weekly_availability, event: @event, day: day, time_zone: 'Samara')
+
+    Booking.create({ start: "2022-11-18T09:30:00.000+04:00", end: "2022-11-18T10:30:00.000+04:00", event: @event, weekly_availability: @weekly_availability, user: @user, trainer: @trainer, recurrent: true })
+
+    get "http://localhost:3000/events/#{@event.id}/available_times?start=#{first_thur.at_beginning_of_day}&end=#{first_thur.at_end_of_day}"
+    # get "http://localhost:3000/events/#{@event.id}/available_times?start=#{time_range[:start]}&end=#{time_range[:end]}"
+
+    res = JSON.parse(response.body)
+    binding.pry
+    day_of_work = res.select { |d| d['day_id'] == day.id }[0]
+    slot_one_start = day_of_work['slots'].first["start"].to_datetime
+  end
 end

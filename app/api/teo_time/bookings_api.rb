@@ -26,9 +26,7 @@ module TeoTime
             recurrent: params[:recurrent]
           }
         )
-        if booking.save
-          BookingMailer.confirm_booking('galliziafilippo@gmail.com').deliver_now
-        end
+        booking
       end
 
       params do

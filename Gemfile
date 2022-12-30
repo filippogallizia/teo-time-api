@@ -73,3 +73,4 @@ gem 'google-api-client', require: 'google/apis/calendar_v3'
 gem 'rack-cors'
 gem 'stripe'
 gem 'whenever'
+gem "letter_opener", group: :development

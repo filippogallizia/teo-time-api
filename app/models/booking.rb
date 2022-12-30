@@ -7,8 +7,8 @@ class Booking < ApplicationRecord
   validates_presence_of :start, :end, :trainer_id, :user_id, :event_id, :weekly_availability_id
   validate :validate_booking_fit_slot, on: [:create, :update]
   validate :validate_overlapping, on: [:create, :update]
-  before_create :add_to_calendar
-  after_destroy :delete_from_calendar
+  after_destroy :notification_on_delete
+  after_commit :notification_on_create, on: [:create]
 
   include TimeHelper
 
@@ -31,9 +31,14 @@ class Booking < ApplicationRecord
 
   def validate_overlapping
     #TODO add validation for recurrent bookings!!!
-    all_bookings = Booking.where({ event_id: event.id, weekly_availability_id: weekly_availability_id, start: self.start.all_day })
-    overlaps = all_bookings.find { |book| overlaps({ start: self.start, end: self.end }, { start: book.start, end: book.end }) }
-    overlaps.present?
+
+    if previous_changes.include?("start") || previous_changes.include?("end")
+      all_bookings = Booking.where({ event_id: event.id, weekly_availability_id: weekly_availability_id, start: self.start.all_day })
+      overlaps = all_bookings.find { |book| overlaps({ start: self.start, end: self.end }, { start: book.start, end: book.end }) }
+      overlaps.present?
+    else
+      false
+    end
   end
 
   def validate_booking_fit_slot
@@ -55,11 +60,11 @@ class Booking < ApplicationRecord
     self.errors.add("Slot missing", "There is not a slot for this booking range") if !match
   end
 
-  def add_to_calendar
+  def add_event_to_google_calendar
     calendar = GoogleCalendar.new
-    event = calendar.event('trainining', 'Milan', 'osteo train', self.start, self.end, self.start.to_datetime.zone)
+    event = calendar.event(self.event&.name, self.weekly_availability.address, "Event: #{self.event&.name}. Cliente: #{self.user.email}", self.start, self.end, self.start.to_datetime.zone)
     res = calendar.insert_event(event)
-    self.calendarEventId = res.id
+    self.update_column(:calendarEventId, res.id)
   end
 
   def change_date_to_start_end(date)
@@ -68,12 +73,15 @@ class Booking < ApplicationRecord
     self
   end
 
-  def delete_from_calendar
+  def delete_event_from_google_calendar
     begin
       calendar = GoogleCalendar.new
       calendar.delete_event(self.calendarEventId)
     rescue
-      puts 'calendar event was not found'
+      puts '
+      ####################################
+      # ERROR FROM GOOGLE EVENT DELETION #
+      ####################################'
     end
   end
 
@@ -89,6 +97,35 @@ class Booking < ApplicationRecord
       trainer: self.trainer,
       event: self.event
     }
+  end
+
+  def send_confirmation_email
+    begin
+      BookingMailer.confirm([self.user.email, self.trainer.email], self).deliver_now
+    rescue
+      puts '
+      #########################################
+      # ERROR FROM SENG BOOKING CONFIRM EMAIL #
+      #########################################'
+    end
+  end
+
+  def send_delete_email
+    begin
+      BookingMailer.delete([self.user.email, self.trainer.email], self).deliver_now
+    rescue
+      puts 'error while sending email'
+    end
+  end
+
+  def notification_on_create
+    add_event_to_google_calendar
+    send_confirmation_email
+  end
+
+  def notification_on_delete
+    delete_event_from_google_calendar
+    send_delete_email
   end
 
 end

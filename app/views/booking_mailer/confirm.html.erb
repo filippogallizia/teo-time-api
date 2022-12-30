@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+</head>
+<body>
+<h3>Appuntamento prenotato</h3>
+<p>
+  Il tuo appuntamento e' stato prenotato con successo.
+</p>
+<p>Data: <strong><%= @params[:start].to_datetime.to_formatted_s(:short) %></strong></p>
+<p>Evento: <strong><%= Event.find_by(id: @params[:event_id])&.name %></strong></p>
+<p>Grazie</p>
+<p>Osteotherapy</p>
+</body>
+</html>

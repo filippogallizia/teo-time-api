@@ -23,4 +23,12 @@ class Event < ApplicationRecord
   def weekly_availabilities
     self.hours.map { |h| h.weekly_availability }.uniq
   end
+
+  def custom_json(include = nil)
+    {
+      **self.attributes,
+      trainer_email: User.find(self.trainer_id).email,
+      weekly_availabilities: include[:weekly_availabilities] && self.weekly_availabilities
+    }
+  end
 end
