@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2022_12_28_133830) do
 
-  create_table "availability_overrides", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "availability_overrides", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.date "start_date"
     t.date "end_date"
     t.datetime "created_at", null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 2022_12_28_133830) do
     t.index ["weekly_availability_id"], name: "index_availability_overrides_on_weekly_availability_id"
   end
 
-  create_table "bookings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "bookings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "start"
     t.datetime "end"
     t.string "calendarEventId"
@@ -39,24 +39,26 @@ ActiveRecord::Schema.define(version: 2022_12_28_133830) do
     t.index ["weekly_availability_id"], name: "index_bookings_on_weekly_availability_id"
   end
 
-  create_table "days", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "days", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "events", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "weekly_availability_id"
     t.integer "duration"
     t.integer "increment_amount"
     t.bigint "trainer_id"
     t.integer "price"
     t.index ["trainer_id"], name: "index_events_on_trainer_id"
+    t.index ["weekly_availability_id"], name: "index_events_on_weekly_availability_id"
   end
 
-  create_table "hours", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "hours", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "start"
     t.integer "end"
     t.datetime "created_at", null: false
@@ -73,7 +75,7 @@ ActiveRecord::Schema.define(version: 2022_12_28_133830) do
     t.index ["weekly_availability_id"], name: "index_hours_on_weekly_availability_id"
   end
 
-  create_table "payments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "payments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "transaction_id"
     t.string "status"
     t.datetime "created_at", null: false
@@ -82,13 +84,13 @@ ActiveRecord::Schema.define(version: 2022_12_28_133830) do
     t.index ["user_id"], name: "index_payments_on_user_id"
   end
 
-  create_table "roles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "roles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -103,7 +105,7 @@ ActiveRecord::Schema.define(version: 2022_12_28_133830) do
     t.index ["role_id"], name: "index_users_on_role_id"
   end
 
-  create_table "weekly_availabilities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+  create_table "weekly_availabilities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

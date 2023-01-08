@@ -1,0 +1,20 @@
+FROM ruby:2.6.5
+
+RUN apt-get update -qq && apt-get install -y nodejs mysql-client
+
+RUN mkdir /myapp
+
+WORKDIR /myapp
+
+COPY Gemfile /myapp/Gemfile
+COPY Gemfile.lock /myapp/Gemfile.lock
+
+RUN bundle install --without development test
+
+COPY . /myapp
+
+RUN RAILS_ENV=production rake assets:precompile
+
+EXPOSE 5000
+
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]

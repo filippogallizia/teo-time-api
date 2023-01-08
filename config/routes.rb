@@ -7,8 +7,8 @@ Rails.application.routes.draw do
     }
     devise_scope :user do
       get 'users/me', to: 'users/sessions#me'
-      get 'users/bookings', to: 'users/sessions#bookings'
       get 'users', to: 'users/sessions#list'
+
     end
   end
 

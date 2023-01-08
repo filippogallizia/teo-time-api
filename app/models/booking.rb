@@ -61,10 +61,17 @@ class Booking < ApplicationRecord
   end
 
   def add_event_to_google_calendar
+    begin
     calendar = GoogleCalendar.new
     event = calendar.event(self.event&.name, self.weekly_availability.address, "Event: #{self.event&.name}. Cliente: #{self.user.email}", self.start, self.end, self.start.to_datetime.zone)
     res = calendar.insert_event(event)
     self.update_column(:calendarEventId, res.id)
+    rescue
+      puts '
+      ####################################
+      # ERROR FROM GOOGLE ADD EVENT #
+      ####################################'
+    end
   end
 
   def change_date_to_start_end(date)

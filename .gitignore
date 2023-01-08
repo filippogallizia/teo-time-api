@@ -27,3 +27,8 @@
 /config/master.key
 /.ruby-env
 .ruby-env
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

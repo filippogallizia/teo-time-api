@@ -25,9 +25,7 @@ class Users::SessionsController < Devise::SessionsController
     else
       respond_with User.all
     end
-  end
-
-  # GET /resource/sign_in
+  end  # GET /resource/sign_in
   # def new
   #   super
   # end

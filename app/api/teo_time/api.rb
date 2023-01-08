@@ -108,5 +108,6 @@ module TeoTime
     mount TeoTime::HoursApi
     mount TeoTime::StripeChargeApi
     mount TeoTime::AvailabilityOverrideApi
+    mount TeoTime::UsersApi
   end
 end

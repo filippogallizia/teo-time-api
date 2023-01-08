@@ -15,11 +15,13 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: root
   password:
+  #password: surfando
   socket: /tmp/mysql.sock
+  #host: db
 
 development:
   <<: *default
-  database: teoTimeRails_development
+  database: <%= ENV['RDS_DB_NAME'] || 'teoTimeRails_development' %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".

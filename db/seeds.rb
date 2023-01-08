@@ -14,4 +14,3 @@ WeeklyAvailability.find_or_create_by({ name: 'default weekly availability' })
   Hour.find_or_create_by({ start: 480, end: 720, weekly_availability_id: 1, day_id: day, time_zone: 'Europe/Berlin' })
   Hour.find_or_create_by({ start: 780, end: 1200, weekly_availability_id: 1, day_id: day, time_zone: 'Europe/Berlin' })
 end
-rail

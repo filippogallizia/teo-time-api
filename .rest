@@ -1,3 +1,4 @@
+
 // -- USERS --
 ###
 POST http://localhost:5000/users/sign_in
@@ -6,7 +7,7 @@ content-type: application/json
 {
   "user": {
     "email": "tim@tim.com",
-    "password": "magicTim"
+    "password": "surfando"
   }
 }
 
@@ -171,12 +172,33 @@ Content-Type: application/json
 }
 
 ###
+GET http://localhost:5000/users/password/edit?i93Ex9VtxEjAvQMGsWh8
+Content-Type: application/json
+
+###
 PUT http://localhost:5000/users/password
 Content-Type: application/json
 
 {
-  "reset_password_token": "bAsrc6pGzbK_xCuXmzCz"
+   "user":
+    {
+        "reset_password_token":"ySUaPP3SbPZoxUu3trKU",
+        "password": "newpassword",
+        "password_confirmation": "newpassword"
+    }
 }
+
+###
+POST http://localhost:5000/users/password
+Content-Type: application/json
+
+{
+    "user":
+    {
+        "email":"tim@tim.com"
+    }
+}
+
 
 ###
 // --PAYMENTS--

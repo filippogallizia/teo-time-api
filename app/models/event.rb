@@ -28,7 +28,7 @@ class Event < ApplicationRecord
     {
       **self.attributes,
       trainer_email: User.find(self.trainer_id).email,
-      weekly_availabilities: include[:weekly_availabilities] && self.weekly_availabilities
+      weekly_availabilities: (include &&include[:weekly_availabilities]) && self.weekly_availabilities
     }
   end
 end
