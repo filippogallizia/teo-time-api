@@ -14,10 +14,10 @@ default: &default
   encoding: utf8
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: root
-  password:
-  #password: surfando
+  #password:
+  password: surfando
   socket: /tmp/mysql.sock
-  #host: db
+  host: db
 
 development:
   <<: *default
@@ -53,4 +53,6 @@ production:
   <<: *default
   database: teoTimeRails_production
   username: teoTimeRails
-  password: <%= ENV['TEOTIMERAILS_DATABASE_PASSWORD'] %>
+  password: <%= ENV['TEOTIMERAILS_DATABASE_PASSWORD'] %> || surfando
+  host: db
+

@@ -33,7 +33,8 @@ module TeoTime
           { clientSecret: payment_intent.client_secret }
 
         rescue Stripe::CardError => e
-          flash[:error] = e.message
+          #flash[:error] = e.message
+          p error
           # redirect_to new_charge_path
         end
       end

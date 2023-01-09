@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  scope defaults: { format: :json } do
+  scope :api, defaults: { format: :json } do
     devise_for :users, controllers: {
       sessions: 'users/sessions',
       passwords: 'users/passwords'
